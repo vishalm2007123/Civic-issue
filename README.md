@@ -12,6 +12,7 @@ Civic issues such as potholes, garbage overflow, streetlight failures, and drain
 
 
 
+
 ## 💡 Solution — SpotFix
 
 **SpotFix** is a smart civic engagement platform that allows citizens to report issues easily, track their resolution status transparently, and visualize complaint hotspots using an **interactive heatmap**.
