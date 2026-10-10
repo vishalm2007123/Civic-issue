@@ -317,7 +317,8 @@
     <!-- Description -->
     <div class="sf-form-group mb-6">
       <label class="sf-label">Description</label>
-      <textarea class="sf-textarea" id="description" placeholder="Describe the problem clearly. When did it start? How severe is it? Any danger to people?" rows="4" oninput="runAI()"></textarea>
+      <div id="audio-recorder-container"></div>
+<textarea class="sf-textarea" id="description" placeholder="Describe the problem clearly. When did it start? How severe is it? Any danger to people?" rows="4" oninput="runAI()"></textarea>
     </div>
 
     <!-- Priority -->
@@ -585,5 +586,6 @@ function confetti() {
   <script src="assets/js/theme-toggle.js"></script>
   <script src="assets/js/draft-saver.js"></script>
   <script src="assets/js/map-mockup.js"></script>
+  <script src="assets/js/audio-reporter.js"></script>
 </body>
 </html>
