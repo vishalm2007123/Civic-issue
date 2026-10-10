@@ -1,0 +1,13 @@
+
+/* SpotFix CSS Animations System */
+@keyframes spotfixPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes spotfixFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animated-pulse { animation: spotfixPulse 2s infinite ease-in-out; }
+.animated-fadein { animation: spotfixFadeIn 0.4s ease-out forwards; }
