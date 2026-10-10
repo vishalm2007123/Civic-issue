@@ -617,6 +617,12 @@
   </div>
 </section>
 
+  <div style="background:var(--card-bg, #1e293b); color:var(--text, #fff); padding:20px; border-radius:16px; margin:20px auto; max-width:1100px; display:flex; justify:space-around; text-align:center;">
+    <div><h3 id="stat-fixed-count" style="font-size:32px; color:#10b981; margin:0;">0</h3><p style="margin:0; font-size:13px;">Issues Resolved</p></div>
+    <div><h3 id="stat-active-users" style="font-size:32px; color:#6366f1; margin:0;">0</h3><p style="margin:0; font-size:13px;">Active Citizens</p></div>
+    <div><h3 id="stat-avg-hours" style="font-size:32px; color:#f59e0b; margin:0;">0</h3><p style="margin:0; font-size:13px;">Avg Resolution (Hrs)</p></div>
+  </div>
+
 <!-- ========== STATS BAND ========== -->
 <div class="stats-band">
   <div class="stats-band-inner">
@@ -802,5 +808,6 @@ if (statsEl) observer.observe(statsEl);
 </script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/theme-toggle.js"></script>
+  <script src="assets/js/analytics-widget.js"></script>
 </body>
 </html>
