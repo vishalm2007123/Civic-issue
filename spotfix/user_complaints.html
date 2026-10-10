@@ -252,6 +252,15 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="sf-section-title">📋 My Complaints</h1>
+
+  <div style="margin:16px 0;">
+    <input type="text" id="complaint-search-input" placeholder="🔍 Search complaints by ID, category, location..." style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid var(--border, #334155); background:var(--card-bg, #1e293b); color:var(--text, #fff); font-size:14px;">
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      SpotFixFilter.applyFilter('complaint-search-input', '.complaints-list', '.card, tr');
+    });
+  </script>
 <div style="margin: 10px 0;"><button id="btn-export-csv" style="margin-right:8px;" class="btn btn-outline" onclick="SpotFixExport.exportToCSV('my_complaints.csv', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📥 Export CSV</button><button id="btn-export-json" class="btn btn-outline" onclick="SpotFixExport.exportToJSON('my_complaints.json', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📦 Export JSON</button></div>
       <p class="sf-section-sub" id="subText">All your submitted civic reports</p>
     </div>
@@ -504,5 +513,6 @@ renderCards();
   <script src="assets/js/theme-toggle.js"></script>
   <script src="assets/js/export-utils.js"></script>
   <script src="assets/js/quick-fab.js"></script>
+  <script src="assets/js/search-filter.js"></script>
 </body>
 </html>
