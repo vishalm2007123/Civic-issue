@@ -1076,3 +1076,9 @@ body {
 .font-bold { font-weight: 700; }
 .text-center { text-align: center; }
 .w-full { width: 100%; }
+
+/* Accessibility Focus Visible */
+*:focus-visible {
+  outline: 3px solid #6366f1;
+  outline-offset: 2px;
+}
