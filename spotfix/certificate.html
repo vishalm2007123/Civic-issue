@@ -353,5 +353,16 @@ document.getElementById('certDate').textContent = now.toLocaleDateString('en-IN'
 document.getElementById('certId').textContent = 'CERT-' + Date.now().toString().slice(-6);
 document.getElementById('certSubText').textContent = `${t.name} certificate for ${user}`;
 </script>
+  <script src="assets/js/image-slider.js"></script>
+
+  <div style="margin:20px 0;">
+    <h4>Impact Verification Snapshot</h4>
+    <div id="cert-slider-container"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      SpotFixSlider.initSlider('cert-slider-container', 'logo.png', 'logo.png');
+    });
+  </script>
 </body>
 </html>
