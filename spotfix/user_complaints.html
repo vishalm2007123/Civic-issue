@@ -240,6 +240,7 @@
   <button class="sf-nav__hamburger" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
 <button id="spotfix-theme-btn" class="btn btn-ghost" style="padding:6px 12px; font-size:13px; margin-left:8px;" aria-label="Toggle theme">🌙 Dark Mode</button>
 <button id="btn-user-avatar" class="spotfix-avatar" style="border:none; cursor:pointer; margin-left:8px;" onclick="SpotFixProfile.toggleProfileMenu()" aria-label="User Profile">AS</button>
+<button id="btn-notif-bell" class="btn btn-ghost" style="position:relative; font-size:18px; margin-left:8px;" onclick="SpotFixNotifs.toggleDrawer()" aria-label="Notifications">🔔<span style="position:absolute; top:2px; right:2px; background:#ef4444; width:8px; height:8px; border-radius:50%;"></span></button>
 </nav>
 <div class="sf-mobile-nav" id="mobileNav">
   <a href="home.html">🏠 Dashboard</a>
@@ -524,5 +525,6 @@ renderCards();
   <script src="assets/js/search-filter.js"></script>
   <script src="assets/js/user-profile-modal.js"></script>
   <script src="assets/js/category-icons.js"></script>
+  <script src="assets/js/live-notifications.js"></script>
 </body>
 </html>
