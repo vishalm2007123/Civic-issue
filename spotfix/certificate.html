@@ -1,99 +1,357 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>CivicHero Certificate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate – SpotFix</title>
+<link rel="stylesheet" href="style.css">
 <style>
-    body {
-        margin: 0;
-        font-family: Georgia, serif;
-        background: #f4f4f4;
-        padding: 20px;
-    }
+body { background: var(--bg); }
 
-    .certificate {
-        background: white;
-        border: 8px solid #0d47a1;
-        padding: 40px;
-        max-width: 850px;
-        margin: auto;
-        text-align: center;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
+.page-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
 
-    h1 {
-        font-size: 40px;
-        color: #0d47a1;
-        margin-bottom: 5px;
-    }
+/* Certificate Paper */
+.certificate-paper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  max-width: 800px;
+}
 
-    h2 {
-        font-size: 32px;
-        margin-top: 40px;
-        margin-bottom: 10px;
-    }
+[data-theme="dark"] .certificate-paper { background: #fff; color: #111; }
 
-    p {
-        font-size: 18px;
-        margin: 5px 0;
-    }
+/* Decorative border */
+.cert-outer-border {
+  margin: 16px;
+  border: 3px solid #2563eb;
+  border-radius: 10px;
+  padding: 16px;
+}
 
-    .name {
-        font-size: 28px;
-        font-weight: bold;
-        margin: 20px 0;
-        color: #1565c0;
-    }
+.cert-inner-border {
+  border: 1px solid rgba(37,99,235,0.3);
+  border-radius: 8px;
+  padding: 40px 60px;
+}
 
-    .footer {
-        margin-top: 50px;
-        font-size: 14px;
-        color: #555;
-    }
+/* Corner ornaments */
+.cert-corner {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.25;
+}
 
-    .download-btn {
-        margin-top: 25px;
-        padding: 10px 20px;
-        background: #0d47a1;
-        color: white;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 15px;
-        cursor: pointer;
-    }
+.cert-corner.tl { top: 24px; left: 24px; }
+.cert-corner.tr { top: 24px; right: 24px; transform: scaleX(-1); }
+.cert-corner.bl { bottom: 24px; left: 24px; transform: scaleY(-1); }
+.cert-corner.br { bottom: 24px; right: 24px; transform: scale(-1,-1); }
+
+/* Background watermark */
+.cert-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 200px;
+  opacity: 0.04;
+  pointer-events: none;
+  color: #2563eb;
+  font-weight: 900;
+}
+
+/* Logo / Header */
+.cert-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: #2563eb;
+}
+
+.cert-logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: white;
+}
+
+.cert-logo-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e40af;
+  letter-spacing: -0.5px;
+}
+
+.cert-divider-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #2563eb, transparent);
+  margin: 20px 0;
+}
+
+.cert-subtitle {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.cert-title {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.cert-presents {
+  text-align: center;
+  font-size: 16px;
+  color: #64748b;
+  margin: 20px 0 10px;
+}
+
+.cert-name {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  color: #1e40af;
+  padding: 8px 0;
+  border-bottom: 2px solid #2563eb;
+  border-top: 2px solid #2563eb;
+  margin: 10px 60px;
+}
+
+.cert-body {
+  text-align: center;
+  font-size: 16px;
+  color: #334155;
+  line-height: 1.8;
+  margin: 20px 20px;
+}
+
+.cert-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 16px 0;
+  border: 2px solid;
+}
+
+.cert-tier-bronze   { background: #fef3c7; color: #78350f; border-color: #cd7f32; }
+.cert-tier-silver   { background: #f1f5f9; color: #334155; border-color: #9e9e9e; }
+.cert-tier-gold     { background: #fffbeb; color: #78350f; border-color: #f59e0b; }
+.cert-tier-platinum { background: #ede9fe; color: #3730a3; border-color: #6366f1; }
+
+/* Footer area */
+.cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.cert-sig-line {
+  width: 140px;
+  text-align: center;
+}
+
+.cert-sig-label {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.cert-sig-val {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e3a8a;
+  padding-bottom: 4px;
+  border-bottom: 2px solid #2563eb;
+  display: inline-block;
+}
+
+.cert-seal {
+  font-size: 56px;
+  text-align: center;
+}
+
+.cert-number {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; }
+  .certificate-paper { box-shadow: none !important; }
+}
 </style>
 </head>
 <body>
 
-<div class="certificate" id="certBox">
-    <h1>🏅 CivicHero Achievement Award</h1>
-    <p>This certificate is proudly presented to</p>
+<!-- NAVBAR (hidden on print) -->
+<nav class="sf-nav no-print">
+  <a href="home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
+  <div style="margin-left:auto;display:flex;gap:10px;">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
 
-    <div class="name" id="username">USER NAME</div>
+<div class="page-layout">
+  <!-- Action Buttons (no-print) -->
+  <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <div>
+      <h1 class="sf-section-title">🏅 Your Certificate</h1>
+      <p class="sf-section-sub" id="certSubText">Download or share your achievement</p>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <a href="rewards.html" class="sf-btn sf-btn-ghost">← Back to Rewards</a>
+      <button class="sf-btn sf-btn-primary" onclick="window.print()">⬇️ Download / Print</button>
+    </div>
+  </div>
 
-    <p>for outstanding contribution in reporting civic issues</p>
-    <p>and helping make the city a better place.</p>
+  <!-- Certificate -->
+  <div class="certificate-paper" id="certBox">
+    <!-- Watermark -->
+    <div class="cert-watermark">📍</div>
 
-    <h2>🌟 Your Impact Matters 🌟</h2>
+    <!-- Corner ornaments -->
+    <div class="cert-corner tl">❦</div>
+    <div class="cert-corner tr">❦</div>
+    <div class="cert-corner bl">❦</div>
+    <div class="cert-corner br">❦</div>
 
-    <p class="footer">Issued by CivicFix — Citizen Empowerment Initiative</p>
+    <div class="cert-outer-border">
+      <div class="cert-inner-border">
+
+        <!-- Logo -->
+        <div class="cert-logo-row">
+          <div class="cert-logo-icon">📍</div>
+          <div class="cert-logo-name">SpotFix</div>
+        </div>
+
+        <div class="cert-divider-line"></div>
+        <div class="cert-subtitle">Certificate of Achievement</div>
+
+        <div class="cert-title" id="certTitle">CivicHero Award</div>
+
+        <div class="cert-presents">This certificate is proudly presented to</div>
+
+        <div class="cert-name" id="certName">CITIZEN NAME</div>
+
+        <div class="cert-body" id="certBody">
+          For outstanding contribution in reporting civic issues<br>
+          and actively working to improve their community.<br>
+          <em>"Your voice makes your city better."</em>
+        </div>
+
+        <div style="text-align:center;margin:16px 0;">
+          <div class="cert-tier-badge cert-tier-bronze" id="tierBadge">
+            <span id="tierIcon">🥉</span>
+            <span id="tierName">Bronze Hero</span>
+          </div>
+        </div>
+
+        <div class="cert-footer">
+          <div class="cert-sig-line">
+            <div class="cert-sig-val">SpotFix</div>
+            <div class="cert-sig-label">Platform Authority</div>
+          </div>
+
+          <div>
+            <div class="cert-seal">🏅</div>
+            <div class="cert-number" id="certId">CERT-00000</div>
+          </div>
+
+          <div class="cert-sig-line">
+            <div class="cert-sig-val" id="certDate">Oct 2025</div>
+            <div class="cert-sig-label">Date of Issue</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
-<br>
-
-<center>
-<a class="download-btn" onclick="downloadPDF()">Download Certificate</a>
-</center>
 
 <script>
-let user = localStorage.getItem("user_name") || "Citizen";
-document.getElementById("username").innerText = user;
-
-function downloadPDF() {
-    window.print();
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
 }
-</script>
 
+const user = localStorage.getItem('user_name') || 'Citizen';
+const tier = localStorage.getItem('active_certificate_tier') || 'bronze';
+
+const tiers = {
+  bronze:   { name: 'Bronze Hero',     icon: '🥉', title: 'CivicHero Bronze Award',    badgeClass: 'cert-tier-bronze' },
+  silver:   { name: 'Silver Citizen',  icon: '🥈', title: 'CivicHero Silver Award',    badgeClass: 'cert-tier-silver' },
+  gold:     { name: 'Gold Champion',   icon: '🥇', title: 'CivicHero Gold Award',      badgeClass: 'cert-tier-gold' },
+  platinum: { name: 'Platinum Legend', icon: '💎', title: 'CivicHero Platinum Award',  badgeClass: 'cert-tier-platinum' },
+};
+
+const t = tiers[tier] || tiers.bronze;
+
+document.getElementById('certName').textContent = user.toUpperCase();
+document.getElementById('certTitle').textContent = t.title;
+document.getElementById('tierIcon').textContent = t.icon;
+document.getElementById('tierName').textContent = t.name;
+
+const badge = document.getElementById('tierBadge');
+badge.className = 'cert-tier-badge ' + t.badgeClass;
+
+const now = new Date();
+document.getElementById('certDate').textContent = now.toLocaleDateString('en-IN', {month:'long', year:'numeric'});
+document.getElementById('certId').textContent = 'CERT-' + Date.now().toString().slice(-6);
+document.getElementById('certSubText').textContent = `${t.name} certificate for ${user}`;
+</script>
 </body>
 </html>
-

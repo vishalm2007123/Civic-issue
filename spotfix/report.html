@@ -1,242 +1,582 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>Report Issue – Spot Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Issue – SpotFix</title>
+<meta name="description" content="Report a civic issue in your city — potholes, garbage, streetlights, water leakage and more.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: radial-gradient(circle at top, #00c6ff, #005bea);
-        color: #fff;
-    }
+.report-layout {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
 
-    .container {
-        max-width: 600px;
-        margin: 25px auto;
-        padding: 15px;
-    }
+.report-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
 
-    .box {
-        background: rgba(0,0,0,0.3);
-        border-radius: 18px;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    }
+.report-header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
 
-    h2 {
-        margin-top: 0;
-        text-align: center;
-    }
+.report-header p {
+  font-size: 15px;
+  color: var(--text-muted);
+}
 
-    label {
-        display: block;
-        margin-top: 12px;
-        font-size: 14px;
-    }
+/* Category cards */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 6px;
+}
 
-    input[type="text"],
-    input[type="file"],
-    select,
-    textarea {
-        width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: none;
-        margin-top: 6px;
-        font-size: 14px;
-    }
+.cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: var(--r-md);
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: all var(--normal) var(--ease);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
 
-    textarea {
-        min-height: 80px;
-        resize: vertical;
-    }
+.cat-card:hover {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
 
-    .img-preview {
-        margin-top: 10px;
-        width: 100%;
-        max-height: 220px;
-        border-radius: 10px;
-        object-fit: cover;
-        display: none;
-    }
+.cat-card.selected {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+  color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
 
-    .ai-tag {
-        margin-top: 6px;
-        font-size: 13px;
-        color: #ffe082;
-    }
+.cat-icon { font-size: 26px; }
 
-    .btn {
-        margin-top: 16px;
-        width: 100%;
-        padding: 12px;
-        background: #ffca28;
-        border: none;
-        border-radius: 24px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        color: #222;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
+/* AI suggestion badge */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 8px;
+}
 
-    .btn:hover {
-        background: #ffd54f;
-    }
+/* Drag & Drop Upload */
+.upload-zone {
+  border: 2px dashed var(--border-2);
+  border-radius: var(--r-lg);
+  padding: 32px;
+  text-align: center;
+  background: var(--bg-2);
+  cursor: pointer;
+  transition: all var(--normal) var(--ease);
+  position: relative;
+}
 
-    .msg {
-        margin-top: 10px;
-        font-size: 14px;
-    }
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.upload-icon { font-size: 40px; margin-bottom: 10px; }
+.upload-text { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+.upload-sub  { font-size: 12px; color: var(--text-subtle); margin-top: 4px; }
+
+.preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.preview-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  border: 2px solid var(--border);
+  position: relative;
+}
+
+/* Map Picker */
+.map-picker-wrap {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+#locationMap {
+  width: 100%;
+  height: 220px;
+}
+
+.map-pick-hint {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Priority */
+.priority-row {
+  display: flex;
+  gap: 10px;
+}
+
+.priority-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--r-md);
+  border: 2px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all var(--normal) var(--ease);
+}
+
+.priority-btn.selected-low  { border-color: var(--success); color: #065f46; background: var(--success-bg); }
+.priority-btn.selected-med  { border-color: var(--warning); color: #b45309; background: var(--warning-bg); }
+.priority-btn.selected-high { border-color: var(--danger);  color: #991b1b; background: var(--danger-bg);  }
+
+/* Success overlay */
+.success-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-overlay.show { display: flex; }
+
+.success-box {
+  background: var(--card);
+  border-radius: var(--r-xl);
+  padding: 48px 40px;
+  text-align: center;
+  max-width: 400px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 0.4s var(--ease);
+}
+
+.success-icon { font-size: 64px; margin-bottom: 16px; }
+.success-box h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.success-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+/* Confetti */
+.confetti-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: confettiFall 1.5s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+
+@media (max-width: 600px) {
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .priority-row { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="box">
-        <h2>Report a New Civic Issue</h2>
-
-        <label>Issue Title</label>
-        <input type="text" id="title" placeholder="Example: Big pothole near school gate">
-
-        <label>Description</label>
-        <textarea id="description" placeholder="Describe the problem clearly..."></textarea>
-
-        <label>Upload Photo</label>
-        <input type="file" id="imageInput" accept="image/*">
-        <img id="preview" class="img-preview">
-
-        <label>Category</label>
-        <select id="category">
-            <option value="">Select Category</option>
-            <option value="Pothole">Pothole</option>
-            <option value="Garbage">Garbage</option>
-            <option value="Streetlight">Streetlight</option>
-            <option value="Water Leakage">Water Leakage</option>
-            <option value="Other">Other</option>
-        </select>
-        <div class="ai-tag" id="aiHint">AI Suggestion: Waiting for image / description...</div>
-
-        <label>Location</label>
-        <input type="text" id="location" placeholder="Example: Main Road, Near Bus Stand">
-
-        <button class="btn" onclick="submitComplaint()">Submit & Earn 25 Coins</button>
-        <div class="msg" id="msg"></div>
-    </div>
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
+  <ul class="sf-nav__links">
+    <li><a href="home.html">🏠 Dashboard</a></li>
+    <li><a href="report.html" class="active">➕ Report</a></li>
+    <li><a href="user_complaints.html">📋 My Issues</a></li>
+    <li><a href="rewards.html">🏆 Rewards</a></li>
+  </ul>
+  <div class="sf-nav__actions">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <div class="sf-nav__avatar" id="avatarEl">?</div>
+  </div>
+  <button class="sf-nav__hamburger" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
+</nav>
+<div class="sf-mobile-nav" id="mobileNav">
+  <a href="home.html">🏠 Dashboard</a>
+  <a href="report.html">➕ Report Issue</a>
+  <a href="user_complaints.html">📋 My Issues</a>
+  <a href="rewards.html">🏆 Rewards</a>
 </div>
 
-<script>
-let selectedImageData = "";
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <h2>Issue Reported!</h2>
+    <p>Your complaint has been submitted successfully. You earned <b>25 coins</b> for making your city better!</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <a href="user_complaints.html" class="sf-btn sf-btn-primary">View My Issues</a>
+      <a href="home.html" class="sf-btn sf-btn-ghost">Dashboard</a>
+    </div>
+  </div>
+</div>
 
-// Load default location from user profile if available
-let savedLoc = localStorage.getItem("user_loc");
-if (savedLoc) {
-    document.getElementById("location").value = savedLoc;
+<!-- MAIN -->
+<div class="report-layout sf-anim-slide">
+  <div class="report-header">
+    <h1>📍 Report a Civic Issue</h1>
+    <p>Help your city. Describe the problem and we'll route it to the right authority.</p>
+  </div>
+
+  <div class="sf-card sf-card-body">
+
+    <!-- Title -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Issue Title</label>
+      <div class="sf-input-icon-wrap">
+        <span class="sf-icon">📝</span>
+        <input class="sf-input" type="text" id="title" placeholder="e.g. Big pothole near school gate" oninput="runAI()">
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Category — Select or let AI detect</label>
+      <div class="cat-grid" id="catGrid">
+        <div class="cat-card" data-cat="Pothole"       onclick="selectCat(this)"><div class="cat-icon">🕳️</div>Pothole</div>
+        <div class="cat-card" data-cat="Garbage"       onclick="selectCat(this)"><div class="cat-icon">🗑️</div>Garbage</div>
+        <div class="cat-card" data-cat="Streetlight"   onclick="selectCat(this)"><div class="cat-icon">💡</div>Streetlight</div>
+        <div class="cat-card" data-cat="Water Leakage" onclick="selectCat(this)"><div class="cat-icon">💧</div>Water Leak</div>
+        <div class="cat-card" data-cat="Other"         onclick="selectCat(this)"><div class="cat-icon">🔧</div>Other</div>
+      </div>
+      <div class="ai-badge" id="aiHint">🤖 AI is watching your description...</div>
+    </div>
+
+    <!-- Description -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Description</label>
+      <textarea class="sf-textarea" id="description" placeholder="Describe the problem clearly. When did it start? How severe is it? Any danger to people?" rows="4" oninput="runAI()"></textarea>
+    </div>
+
+    <!-- Priority -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Priority Level</label>
+      <div class="priority-row">
+        <div class="priority-btn" id="pl" onclick="selectPriority('Low')">🟢 Low</div>
+        <div class="priority-btn" id="pm" onclick="selectPriority('Medium')">🟡 Medium</div>
+        <div class="priority-btn" id="ph" onclick="selectPriority('High')">🔴 High / Urgent</div>
+      </div>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Photo Evidence (optional)</label>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="imageInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+        <div class="upload-icon">📸</div>
+        <div class="upload-text">Drag & drop photos here, or click to browse</div>
+        <div class="upload-sub">JPG, PNG, WEBP up to 5MB each</div>
+      </div>
+      <div class="preview-grid" id="previewGrid"></div>
+    </div>
+
+    <!-- Location -->
+    <div class="sf-form-group mb-6">
+      <label class="sf-label">Location</label>
+      <div class="sf-input-icon-wrap" style="margin-bottom:8px;">
+        <span class="sf-icon">📍</span>
+        <input class="sf-input" type="text" id="location" placeholder="e.g. Main Road, Near Bus Stand">
+      </div>
+      <button class="sf-btn sf-btn-ghost" style="font-size:13px;margin-bottom:8px;" onclick="getGPS()">
+        📡 Use My GPS Location
+      </button>
+      <div class="map-picker-wrap">
+        <div id="locationMap"></div>
+        <div class="map-pick-hint">📌 Click the map to drop a pin at the exact location</div>
+      </div>
+    </div>
+
+    <!-- Anonymous -->
+    <div class="sf-form-group mb-6">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="anonMode" style="width:18px;height:18px;accent-color:var(--primary);">
+        <span style="font-size:14px;color:var(--text-2);font-weight:500;">🕵️ Report anonymously (your name won't be shown publicly)</span>
+      </label>
+    </div>
+
+    <div class="sf-divider"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="font-size:13px;color:var(--text-muted);">
+        🪙 You'll earn <b>25 coins</b> for submitting!
+      </div>
+      <div style="display:flex;gap:10px;">
+        <a href="home.html" class="sf-btn sf-btn-ghost">Cancel</a>
+        <button class="sf-btn sf-btn-primary sf-btn-lg" onclick="submitComplaint()">
+          Submit Report 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="sf-toast-container"></div>
+
+<script>
+/* Theme */
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+  const name = localStorage.getItem('user_name') || 'C';
+  document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('open'); }
+
+/* Toast */
+function toast(msg, type='success') {
+  const icons = {success:'✅',danger:'❌',warning:'⚠️',info:'ℹ️'};
+  const el = document.createElement('div');
+  el.className = `sf-toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+  document.getElementById('sf-toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
 
-// IMAGE PREVIEW + READ AS DATA URL
-document.getElementById("imageInput").addEventListener("change", function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+/* Pre-fill location */
+const savedLoc = localStorage.getItem('user_loc');
+if (savedLoc) document.getElementById('location').value = savedLoc;
 
+/* ---- Category Selection ---- */
+let selectedCategory = '';
+function selectCat(el) {
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCategory = el.dataset.cat;
+}
+
+/* ---- Priority ---- */
+let selectedPriority = 'Medium';
+selectPriorityOnLoad();
+function selectPriorityOnLoad() {
+  document.getElementById('pm').classList.add('selected-med');
+}
+function selectPriority(p) {
+  selectedPriority = p;
+  const btns = ['pl','pm','ph'];
+  const classes = ['selected-low','selected-med','selected-high'];
+  btns.forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('selected-low','selected-med','selected-high');
+    if ((p === 'Low' && i === 0) || (p === 'Medium' && i === 1) || (p === 'High' && i === 2)) {
+      el.classList.add(classes[i]);
+    }
+  });
+}
+
+/* ---- AI Category Suggestion ---- */
+function runAI() {
+  const text = (document.getElementById('title').value + ' ' + document.getElementById('description').value).toLowerCase();
+  let cat = 'Other';
+  if (text.match(/pothole|road|hole|asphalt|crack/)) cat = 'Pothole';
+  else if (text.match(/garbage|trash|waste|dump|litter|bin|rubbish/)) cat = 'Garbage';
+  else if (text.match(/light|streetlight|lamp|dark|bulb|electric/)) cat = 'Streetlight';
+  else if (text.match(/water|leak|pipe|sewage|drain|flood/)) cat = 'Water Leakage';
+
+  document.getElementById('aiHint').innerHTML = `🤖 AI Suggestion: <b>${cat}</b>`;
+
+  // Auto-select if not manually chosen
+  if (!selectedCategory) {
+    const card = document.querySelector(`.cat-card[data-cat="${cat}"]`);
+    if (card) selectCat(card);
+  }
+}
+
+/* ---- File Upload ---- */
+let selectedImages = [];
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(files) {
+  const grid = document.getElementById('previewGrid');
+  Array.from(files).forEach(file => {
+    if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = function(ev) {
-        selectedImageData = ev.target.result;
-        const img = document.getElementById("preview");
-        img.src = selectedImageData;
-        img.style.display = "block";
+    reader.onload = ev => {
+      selectedImages.push(ev.target.result);
+      const img = document.createElement('img');
+      img.className = 'preview-thumb';
+      img.src = ev.target.result;
+      grid.appendChild(img);
     };
     reader.readAsDataURL(file);
-
-    // use filename as hint for AI
-    runAISuggestion(file.name);
-});
-
-// AI suggestion when typing description
-document.getElementById("description").addEventListener("input", function() {
-    runAISuggestion(this.value);
-});
-
-function runAISuggestion(text) {
-    text = text.toLowerCase();
-    let suggested = "Other";
-
-    if (text.includes("pothole") || text.includes("road") || text.includes("hole")) {
-        suggested = "Pothole";
-    } else if (text.includes("garbage") || text.includes("trash") || text.includes("waste") || text.includes("dump")) {
-        suggested = "Garbage";
-    } else if (text.includes("light") || text.includes("streetlight") || text.includes("lamp") || text.includes("dark")) {
-        suggested = "Streetlight";
-    } else if (text.includes("water") || text.includes("leak") || text.includes("pipe") || text.includes("sewage") || text.includes("drain")) {
-        suggested = "Water Leakage";
-    }
-
-    document.getElementById("aiHint").innerText = "AI Suggestion: " + suggested;
-
-    // Auto-set category dropdown if empty or 'Other'
-    const categorySelect = document.getElementById("category");
-    if (!categorySelect.value || categorySelect.value === "Other") {
-        categorySelect.value = suggested;
-    }
+  });
 }
 
-function submitComplaint() {
-    const title = document.getElementById("title").value.trim();
-    const desc = document.getElementById("description").value.trim();
-    const cat = document.getElementById("category").value;
-    const loc = document.getElementById("location").value.trim();
-    const msg = document.getElementById("msg");
-    const userName = localStorage.getItem("user_name") || "Citizen";
-
-    msg.style.color = "yellow";
-    msg.innerText = "";
-
-    if (!title || !desc || !cat || !loc) {
-        msg.innerText = "Please fill all the fields and select a category.";
-        return;
+/* ---- GPS ---- */
+let pickedLat = null, pickedLng = null;
+function getGPS() {
+  if (!navigator.geolocation) { toast('Geolocation not supported', 'warning'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    pickedLat = pos.coords.latitude;
+    pickedLng = pos.coords.longitude;
+    document.getElementById('location').value = `GPS: ${pickedLat.toFixed(5)}, ${pickedLng.toFixed(5)}`;
+    if (pickMap) {
+      pickMap.setView([pickedLat, pickedLng], 16);
+      pickMarker.setLatLng([pickedLat, pickedLng]);
     }
+    toast('📍 GPS location captured!', 'success');
+  }, () => toast('Unable to access location', 'danger'));
+}
 
-    let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+/* ---- Location Map ---- */
+const pickMap = L.map('locationMap').setView([10.8279, 77.0580], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(pickMap);
+const pickMarker = L.marker([10.8279, 77.0580], { draggable: true }).addTo(pickMap);
+pickMarker.bindPopup('Drag me to the issue location!').openPopup();
+pickMap.on('click', e => {
+  pickedLat = e.latlng.lat;
+  pickedLng = e.latlng.lng;
+  pickMarker.setLatLng(e.latlng);
+  document.getElementById('location').value = `Lat: ${pickedLat.toFixed(5)}, Lng: ${pickedLng.toFixed(5)}`;
+});
+pickMarker.on('dragend', () => {
+  const pos = pickMarker.getLatLng();
+  pickedLat = pos.lat;
+  pickedLng = pos.lng;
+  document.getElementById('location').value = `Lat: ${pickedLat.toFixed(5)}, Lng: ${pickedLng.toFixed(5)}`;
+});
 
-    let newComplaint = {
-        id: Date.now(),
-        title: title,
-        description: desc,
-        category: cat,
-        location: loc,
-        user: userName,
-        status: "Pending",
-        deadline: null,
-        money: 0,
-        image: selectedImageData,
-        createdAt: new Date().toISOString()
-    };
+/* ---- Submit ---- */
+function submitComplaint() {
+  const title = document.getElementById('title').value.trim();
+  const desc  = document.getElementById('description').value.trim();
+  const loc   = document.getElementById('location').value.trim();
+  const anon  = document.getElementById('anonMode').checked;
+  const cat   = selectedCategory || 'Other';
 
-    complaints.push(newComplaint);
-    localStorage.setItem("complaints", JSON.stringify(complaints));
+  if (!title) { toast('Please enter an issue title', 'danger'); return; }
+  if (!desc)  { toast('Please describe the issue', 'danger'); return; }
+  if (!loc)   { toast('Please enter or pick a location', 'danger'); return; }
 
-    // Update global total
-    let total = parseInt(localStorage.getItem("complaints_total") || "0");
-    localStorage.setItem("complaints_total", total + 1);
+  const userName = anon ? 'Anonymous' : (localStorage.getItem('user_name') || 'Citizen');
 
-    // Update coins
-    let userKey = "user_coins_" + userName;
-    let userCoins = parseInt(localStorage.getItem(userKey) || "0");
-    userCoins += 25;
-    localStorage.setItem(userKey, userCoins);
+  const complaint = {
+    id: Date.now(),
+    title, description: desc, category: cat, location: loc,
+    user: userName, status: 'Pending',
+    priority: selectedPriority, deadline: null, money: 0,
+    image: selectedImages[0] || '', images: selectedImages,
+    lat: pickedLat, lng: pickedLng,
+    createdAt: new Date().toISOString(),
+    upvotes: 0, comments: []
+  };
 
-    let globalCoins = parseInt(localStorage.getItem("coins_total") || "0");
-    localStorage.setItem("coins_total", globalCoins + 25);
+  const complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+  complaints.push(complaint);
+  localStorage.setItem('complaints', JSON.stringify(complaints));
 
-    msg.style.color = "#c8e6c9";
-    msg.innerText = "Issue submitted successfully! You earned 25 coins 🎉";
+  // Coins
+  if (!anon) {
+    const key = 'user_coins_' + userName;
+    localStorage.setItem(key, (parseInt(localStorage.getItem(key) || 0) + 25).toString());
+  }
+  localStorage.setItem('complaints_total', (parseInt(localStorage.getItem('complaints_total') || 0) + 1).toString());
 
-    setTimeout(() => {
-        window.location.href = "user_complaints.html";
-    }, 1200);
+  // Show success + confetti
+  confetti();
+  document.getElementById('successOverlay').classList.add('show');
+}
+
+function confetti() {
+  const colors = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+  for (let i = 0; i < 60; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'confetti-dot';
+    dot.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:${Math.random()*30}vh;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.8}s;
+      width:${6+Math.random()*6}px;
+      height:${6+Math.random()*6}px;
+    `;
+    document.body.appendChild(dot);
+    setTimeout(() => dot.remove(), 2500);
+  }
 }
 </script>
-
 </body>
 </html>

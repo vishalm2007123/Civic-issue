@@ -1,155 +1,399 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>Staff Dashboard – Spot Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard – SpotFix</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #eef2f7;
-    }
+body { display: flex; flex-direction: column; min-height: 100vh; }
 
-    .header {
-        background: #004a94;
-        padding: 18px;
-        color: white;
-        text-align: center;
-        font-size: 22px;
-    }
+.staff-layout {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - var(--nav-h));
+}
 
-    .container {
-        width: 90%;
-        max-width: 800px;
-        margin: 20px auto;
-    }
+.staff-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 24px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: sticky;
+  top: var(--nav-h);
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+}
 
-    .card {
-        background: white;
-        padding: 18px;
-        margin: 15px 0;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.08);
-    }
+.staff-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--fast) var(--ease);
+}
 
-    .title {
-        font-size: 18px;
-        color: #333;
-        margin-bottom: 6px;
-    }
+.staff-sidebar a:hover { background: var(--bg-2); color: var(--text); }
+.staff-sidebar a.active { background: rgba(239,68,68,0.1); color: #ef4444; font-weight: 600; }
 
-    .value {
-        font-size: 26px;
-        font-weight: bold;
-        color: #004a94;
-    }
+.sidebar-sec {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 14px 12px 6px;
+}
 
-    .btn {
-        display: inline-block;
-        padding: 12px 18px;
-        background: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
-        margin-top: 15px;
-        font-size: 16px;
-    }
+.sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
 
-    .btn:hover {
-        background: #005fcc;
-    }
+.staff-main {
+  flex: 1;
+  padding: 28px 28px;
+  overflow-x: hidden;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Charts row */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* Urgent alerts */
+.urgent-strip {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  border-radius: var(--r-xl);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.urgent-strip h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 3px;
+}
+
+.urgent-count {
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .staff-sidebar { display: none; }
+  .staff-main { padding: 20px 16px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-    Government Staff Dashboard
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="staff_home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">🏛️</div>
+    <div class="sf-nav__logo-text">SpotFix <span>Staff</span></div>
+  </a>
+  <ul class="sf-nav__links">
+    <li><a href="staff_home.html" class="active">🏠 Dashboard</a></li>
+    <li><a href="issue_management.html">📋 Manage Issues</a></li>
+  </ul>
+  <div class="sf-nav__actions">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <div class="sf-nav__avatar" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" id="staffAvatar">S</div>
+  </div>
+</nav>
+
+<div class="staff-layout">
+  <!-- SIDEBAR -->
+  <div class="staff-sidebar">
+    <div class="sidebar-sec">Management</div>
+    <a href="staff_home.html" class="active"><span>🏠</span> Dashboard</a>
+    <a href="issue_management.html"><span>📋</span> Manage Issues</a>
+
+    <div class="sidebar-bottom">
+      <a href="staff_login.html" onclick="logout()" style="color:var(--danger)"><span>🚪</span> Logout</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="staff-main">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="sf-section-title">🏛️ Staff Dashboard</h1>
+        <p class="sf-section-sub">Government staff portal — manage all civic complaints</p>
+      </div>
+      <a href="issue_management.html" class="sf-btn sf-btn-primary">📋 Manage Issues →</a>
+    </div>
+
+    <!-- Urgent Banner -->
+    <div class="urgent-strip" id="urgentStrip" style="display:none;">
+      <div>
+        <h3>⚠️ Urgent Issues — Deadline Passed!</h3>
+        <p style="font-size:13px;opacity:0.85;">These issues require immediate attention.</p>
+      </div>
+      <div class="urgent-count" id="urgentCount">0</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row sf-stagger">
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon info">📊</div>
+        <div>
+          <div class="sf-stat-value" id="totalReports">0</div>
+          <div class="sf-stat-label">Total Reports</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon warning">⏳</div>
+        <div>
+          <div class="sf-stat-value" id="pendingCount">0</div>
+          <div class="sf-stat-label">Pending / Unsolved</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon success">✅</div>
+        <div>
+          <div class="sf-stat-value" id="solvedCount">0</div>
+          <div class="sf-stat-label">Solved</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon danger">🔴</div>
+        <div>
+          <div class="sf-stat-value" id="urgentCountCard">0</div>
+          <div class="sf-stat-label">Urgent (Overdue)</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon primary">💰</div>
+        <div>
+          <div class="sf-stat-value" id="totalMoney">₹0</div>
+          <div class="sf-stat-label">Budget Allocated</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon primary">📈</div>
+        <div>
+          <div class="sf-stat-value" id="avgMoney">₹0</div>
+          <div class="sf-stat-label">Avg Cost / Issue</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>📊 Issues by Status</h3>
+        <canvas id="statusChart" height="200"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>📂 Issues by Category</h3>
+        <canvas id="categoryChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Quick recent table -->
+    <div class="sf-card" style="overflow:hidden;">
+      <div class="section-hdr" style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <h3 style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:var(--text);">🕐 Recent Reports</h3>
+        <a href="issue_management.html" class="sf-btn sf-btn-ghost" style="font-size:12px;padding:6px 14px;">View All</a>
+      </div>
+      <div class="sf-table-wrap" style="border:none;border-radius:0;box-shadow:none;">
+        <table class="sf-table">
+          <thead>
+            <tr><th>Issue</th><th>Category</th><th>Status</th><th>Reporter</th><th>Date</th></tr>
+          </thead>
+          <tbody id="recentTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-
-    <!-- TOTAL REPORTS -->
-    <div class="card">
-        <div class="title">Total Reports Received</div>
-        <div class="value" id="totalReports">0</div>
-    </div>
-
-    <!-- UNSOLVED -->
-    <div class="card">
-        <div class="title">Unsolved / Pending Cases</div>
-        <div class="value" id="unsolved">0</div>
-    </div>
-
-    <!-- SOLVED -->
-    <div class="card">
-        <div class="title">Solved Cases</div>
-        <div class="value" id="solved">0</div>
-    </div>
-
-    <!-- DEADLINE BASED URGENT ISSUES -->
-    <div class="card">
-        <div class="title">Urgent Issues (Deadline Passed)</div>
-        <div class="value" id="urgent">0</div>
-    </div>
-
-    <!-- TOTAL AMOUNT ALLOCATED -->
-    <div class="card">
-        <div class="title">Total Amount Allocated</div>
-        <div class="value" id="totalMoney">₹0</div>
-    </div>
-
-    <!-- AVERAGE ALLOCATION PER COMPLAINT -->
-    <div class="card">
-        <div class="title">Average Amount Spent Per Issue</div>
-        <div class="value" id="avgMoney">₹0</div>
-    </div>
-
-    <a class="btn" href="issue_management.html">Manage Complaints</a>
-</div>
+<div id="sf-toast-container"></div>
 
 <script>
-// -------------------------------------
-// INITIAL DATA SETUP (RUNS IF FIRST TIME)
-// -------------------------------------
-if (!localStorage.getItem("complaints")) {
-    localStorage.setItem("complaints", JSON.stringify([]));
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+  const sid = localStorage.getItem('active_staff');
+  if (sid) document.getElementById('staffAvatar').textContent = sid.charAt(0).toUpperCase();
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+  buildCharts();
 }
 
-if (!localStorage.getItem("money_allocated_total")) {
-    localStorage.setItem("money_allocated_total", 0);
+function logout() {
+  localStorage.removeItem('active_staff');
+  window.location.href = 'staff_login.html';
 }
 
-// -------------------------------------
-// DASHBOARD CALCULATIONS
-// -------------------------------------
+const statusBadge = {
+  'Pending':'sf-badge-pending','Verified':'sf-badge-verified',
+  'In-Progress':'sf-badge-inprogress','Solved':'sf-badge-solved'
+};
+
+let statusChartInst, catChartInst;
+
 function loadDashboard() {
-    let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+  const complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+  const now = new Date();
 
-    let total = complaints.length;
-    let solved = complaints.filter(c => c.status === "Solved").length;
-    let unsolved = complaints.filter(c => c.status !== "Solved").length;
+  const total   = complaints.length;
+  const solved  = complaints.filter(c => c.status === 'Solved').length;
+  const pending = complaints.filter(c => c.status !== 'Solved').length;
+  const urgent  = complaints.filter(c => c.deadline && new Date(c.deadline) < now && c.status !== 'Solved').length;
+  const totalMoney = parseInt(localStorage.getItem('money_allocated_total') || 0);
+  const avgMoney = total > 0 ? Math.floor(totalMoney / total) : 0;
 
-    // Count deadlines passed
-    let urgent = complaints.filter(c => {
-        if (!c.deadline) return false;
-        return new Date(c.deadline) < new Date() && c.status !== "Solved";
-    }).length;
+  function animCount(id, val, prefix='') {
+    const el = document.getElementById(id);
+    let n = 0;
+    const step = Math.max(1, Math.floor(val / 25));
+    const t = setInterval(() => {
+      n = Math.min(n + step, val);
+      el.textContent = prefix + n.toLocaleString('en-IN');
+      if (n >= val) clearInterval(t);
+    }, 40);
+  }
 
-    let totalMoney = parseInt(localStorage.getItem("money_allocated_total")) || 0;
+  animCount('totalReports', total);
+  animCount('pendingCount', pending);
+  animCount('solvedCount', solved);
+  animCount('urgentCountCard', urgent);
+  document.getElementById('totalMoney').textContent = '₹' + totalMoney.toLocaleString('en-IN');
+  document.getElementById('avgMoney').textContent = '₹' + avgMoney.toLocaleString('en-IN');
 
-    let avgMoney = total > 0 ? Math.floor(totalMoney / total) : 0;
+  if (urgent > 0) {
+    document.getElementById('urgentStrip').style.display = 'flex';
+    document.getElementById('urgentCount').textContent = urgent;
+  }
 
-    // Update UI
-    document.getElementById("totalReports").innerText = total;
-    document.getElementById("unsolved").innerText = unsolved;
-    document.getElementById("solved").innerText = solved;
-    document.getElementById("urgent").innerText = urgent;
-    document.getElementById("totalMoney").innerText = "₹" + totalMoney;
-    document.getElementById("avgMoney").innerText = "₹" + avgMoney;
+  // Recent table
+  const tbody = document.getElementById('recentTable');
+  const recent = [...complaints].reverse().slice(0, 8);
+  tbody.innerHTML = recent.map(c => {
+    const d = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '—';
+    return `<tr onclick="location.href='issue_management.html'" style="cursor:pointer;">
+      <td><b>${(c.title||'—').slice(0,40)}</b></td>
+      <td>${c.category||'—'}</td>
+      <td><span class="sf-badge ${statusBadge[c.status]||''}">${c.status}</span></td>
+      <td style="font-size:12px;">${c.user||'—'}</td>
+      <td style="font-size:12px;">${d}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">No reports yet.</td></tr>`;
+
+  buildCharts(complaints);
+}
+
+function buildCharts(complaints) {
+  complaints = complaints || JSON.parse(localStorage.getItem('complaints')) || [];
+
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#94a3b8' : '#64748b';
+
+  // Status chart
+  const statusData = {
+    'Pending': complaints.filter(c => c.status === 'Pending').length,
+    'Verified': complaints.filter(c => c.status === 'Verified').length,
+    'In-Progress': complaints.filter(c => c.status === 'In-Progress').length,
+    'Solved': complaints.filter(c => c.status === 'Solved').length,
+  };
+
+  if (statusChartInst) statusChartInst.destroy();
+  statusChartInst = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusData),
+      datasets: [{ data: Object.values(statusData),
+        backgroundColor: ['#f59e0b','#3b82f6','#8b5cf6','#10b981'],
+        borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: { plugins: { legend: { labels: { color: textColor } } }, cutout: '65%' }
+  });
+
+  // Category chart
+  const cats = ['Pothole','Garbage','Streetlight','Water Leakage','Other'];
+  const catData = cats.map(c => complaints.filter(x => x.category === c).length);
+
+  if (catChartInst) catChartInst.destroy();
+  catChartInst = new Chart(document.getElementById('categoryChart'), {
+    type: 'bar',
+    data: {
+      labels: cats,
+      datasets: [{ data: catData,
+        backgroundColor: ['#6366f1','#10b981','#f59e0b','#3b82f6','#8b5cf6'],
+        borderRadius: 8, borderWidth: 0 }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor } },
+        y: { grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 } }
+      }
+    }
+  });
 }
 
 loadDashboard();
 </script>
-
 </body>
 </html>

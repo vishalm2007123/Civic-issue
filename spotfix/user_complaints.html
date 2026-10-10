@@ -1,143 +1,500 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>My Complaints – Spot Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Complaints – SpotFix</title>
+<link rel="stylesheet" href="style.css">
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f3f4f7;
-    }
+.page-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
 
-    .header {
-        background: #005bea;
-        color: white;
-        padding: 15px;
-        text-align: center;
-        font-size: 20px;
-    }
+/* Filter Bar */
+.filter-bar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-xs);
+}
 
-    .container {
-        max-width: 900px;
-        margin: 20px auto;
-        padding: 0 10px;
-    }
+.filter-bar .sf-input-icon-wrap {
+  flex: 1;
+  min-width: 200px;
+}
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
+.filter-bar select {
+  width: auto;
+  min-width: 140px;
+}
 
-    th, td {
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-        font-size: 14px;
-        text-align: left;
-    }
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  background: var(--bg-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
 
-    th {
-        background: #005bea;
-        color: #fff;
-    }
+.view-btn {
+  padding: 7px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-muted);
+  transition: all var(--fast) var(--ease);
+}
 
-    tr:hover {
-        background: #f1f7ff;
-        cursor: pointer;
-    }
+.view-btn.active {
+  background: var(--primary);
+  color: white;
+}
 
-    .status-badge {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        color: white;
-        display: inline-block;
-    }
+/* Cards View */
+.complaint-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
 
-    .Pending { background: #9e9e9e; }
-    .Verified { background: #1976d2; }
-    .In-Progress { background: #ff9800; }
-    .Solved { background: #2e7d32; }
+.complaint-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--normal) var(--ease);
+  cursor: pointer;
+}
 
-    .top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-    }
+.complaint-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
 
-    .back-btn {
-        text-decoration: none;
-        background: #ffca28;
-        padding: 8px 14px;
-        border-radius: 18px;
-        color: #222;
-        font-size: 13px;
-        font-weight: bold;
-    }
+.complaint-card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.complaint-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.complaint-card-body {
+  padding: 16px;
+}
+
+.complaint-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.complaint-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.complaint-card-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.complaint-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* Progress tracker mini */
+.mini-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 10px 0;
+}
+
+.mini-step {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.mini-step.done-pending  { background: var(--warning); }
+.mini-step.done-verified { background: var(--info); }
+.mini-step.done-progress { background: #8b5cf6; }
+.mini-step.done-solved   { background: var(--success); }
+
+/* Upvote */
+.upvote-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all var(--fast) var(--ease);
+}
+
+.upvote-btn:hover, .upvote-btn.voted {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Tab strip */
+.tab-strip {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--bg-2);
+  padding: 4px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  width: fit-content;
+}
+
+.tab-btn {
+  padding: 7px 18px;
+  border-radius: var(--r-full);
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+
+.tab-btn.active {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: var(--shadow-xs);
+}
+
+@media (max-width: 600px) {
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .complaint-cards { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">My Complaints</div>
-
-<div class="container">
-    <div class="top-row">
-        <div id="userInfo"></div>
-        <a href="home.html" class="back-btn">⬅ Back to Home</a>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Created At</th>
-            </tr>
-        </thead>
-        <tbody id="body"></tbody>
-    </table>
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
+  <ul class="sf-nav__links">
+    <li><a href="home.html">🏠 Dashboard</a></li>
+    <li><a href="report.html">➕ Report</a></li>
+    <li><a href="user_complaints.html" class="active">📋 My Issues</a></li>
+    <li><a href="rewards.html">🏆 Rewards</a></li>
+    <li><a href="leaderboard.html">🥇 Leaderboard</a></li>
+  </ul>
+  <div class="sf-nav__actions">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <div class="sf-nav__avatar" id="avatarEl">?</div>
+  </div>
+  <button class="sf-nav__hamburger" onclick="toggleMobileNav()"><span></span><span></span><span></span></button>
+</nav>
+<div class="sf-mobile-nav" id="mobileNav">
+  <a href="home.html">🏠 Dashboard</a>
+  <a href="report.html">➕ Report Issue</a>
+  <a href="user_complaints.html">📋 My Issues</a>
+  <a href="rewards.html">🏆 Rewards</a>
 </div>
 
+<div class="page-layout sf-anim-fade">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="sf-section-title">📋 My Complaints</h1>
+      <p class="sf-section-sub" id="subText">All your submitted civic reports</p>
+    </div>
+    <a href="report.html" class="sf-btn sf-btn-primary">➕ New Report</a>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-strip" id="tabStrip">
+    <button class="tab-btn active" data-tab="mine" onclick="setTab(this,'mine')">My Reports</button>
+    <button class="tab-btn" data-tab="all" onclick="setTab(this,'all')">All Community</button>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="sf-input-icon-wrap">
+      <span class="sf-icon">🔍</span>
+      <input class="sf-input" type="text" id="searchInput" placeholder="Search by title or location..." oninput="renderCards()">
+    </div>
+    <select class="sf-select" id="statusFilter" onchange="renderCards()" style="width:auto;min-width:140px;">
+      <option value="all">All Statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="Verified">Verified</option>
+      <option value="In-Progress">In-Progress</option>
+      <option value="Solved">Solved</option>
+    </select>
+    <select class="sf-select" id="catFilter" onchange="renderCards()" style="width:auto;min-width:130px;">
+      <option value="all">All Categories</option>
+      <option value="Pothole">Pothole</option>
+      <option value="Garbage">Garbage</option>
+      <option value="Streetlight">Streetlight</option>
+      <option value="Water Leakage">Water Leakage</option>
+      <option value="Other">Other</option>
+    </select>
+    <select class="sf-select" id="sortOrder" onchange="renderCards()" style="width:auto;min-width:120px;">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="upvotes">Most Upvoted</option>
+    </select>
+    <div class="view-toggle">
+      <button class="view-btn active" id="cardViewBtn" onclick="setView('card')" title="Card view">⊞</button>
+      <button class="view-btn" id="tableViewBtn" onclick="setView('table')" title="Table view">☰</button>
+    </div>
+  </div>
+
+  <!-- Cards / Table -->
+  <div id="cardsContainer" class="complaint-cards"></div>
+  <div id="tableContainer" style="display:none;">
+    <div class="sf-table-wrap">
+      <table class="sf-table">
+        <thead>
+          <tr>
+            <th>Title</th><th>Category</th><th>Status</th><th>Priority</th><th>Date</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="emptyState" style="display:none;">
+    <div class="sf-empty">
+      <div class="sf-empty__icon">📭</div>
+      <div class="sf-empty__title">No complaints found</div>
+      <div class="sf-empty__text">Try adjusting your filters, or <a href="report.html" style="color:var(--primary);">report a new issue</a>.</div>
+    </div>
+  </div>
+</div>
+
+<div id="sf-toast-container"></div>
+
 <script>
-const userName = localStorage.getItem("user_name") || "Citizen";
-document.getElementById("userInfo").innerText = "Logged in as: " + userName;
+/* Theme */
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+  const name = localStorage.getItem('user_name') || 'C';
+  document.getElementById('avatarEl').textContent = name.charAt(0).toUpperCase();
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('open'); }
 
-let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
-let userComplaints = complaints.filter(c => c.user === userName);
-
-let body = document.getElementById("body");
-
-if (userComplaints.length === 0) {
-    body.innerHTML = `<tr><td colspan="4">No complaints submitted yet.</td></tr>`;
-} else {
-    userComplaints.forEach(c => {
-        
-        let date = new Date(c.createdAt);
-        let dateStr = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-
-        body.innerHTML += `
-            <tr onclick="track(${c.id})">
-                <td>${c.title}</td>
-                <td>${c.category}</td>
-                <td><span class="status-badge ${c.status}">${c.status}</span></td>
-                <td>${dateStr}</td>
-            </tr>
-        `;
-    });
+function toast(msg, type='success') {
+  const icons = {success:'✅',danger:'❌',warning:'⚠️',info:'ℹ️'};
+  const el = document.createElement('div');
+  el.className = `sf-toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+  document.getElementById('sf-toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
 
-// TRACKING FUNCTION
-function track(id) {
-    localStorage.setItem("track_id", id);
-    window.location.href = "track_complaint.html";
+const userName = localStorage.getItem('user_name') || 'Citizen';
+let currentTab = 'mine';
+let currentView = 'card';
+
+const statusMap = {
+  'Pending'    : 'sf-badge-pending',
+  'Verified'   : 'sf-badge-verified',
+  'In-Progress': 'sf-badge-inprogress',
+  'Solved'     : 'sf-badge-solved'
+};
+
+const catIcons = {
+  'Pothole':'🕳️','Garbage':'🗑️','Streetlight':'💡','Water Leakage':'💧','Other':'🔧'
+};
+
+function setTab(btn, tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTab = tab;
+  renderCards();
 }
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('cardsContainer').style.display = v === 'card' ? 'grid' : 'none';
+  document.getElementById('tableContainer').style.display  = v === 'table' ? 'block' : 'none';
+  document.getElementById('cardViewBtn').classList.toggle('active', v === 'card');
+  document.getElementById('tableViewBtn').classList.toggle('active', v === 'table');
+  renderCards();
+}
+
+function getStepClass(status, step) {
+  const order = ['Pending','Verified','In-Progress','Solved'];
+  const idx = order.indexOf(status);
+  const stepIdx = order.indexOf(step);
+  if (stepIdx > idx) return '';
+  const classes = ['done-pending','done-verified','done-progress','done-solved'];
+  return classes[Math.min(stepIdx, idx)];
+}
+
+function renderCards() {
+  let data = JSON.parse(localStorage.getItem('complaints')) || [];
+  if (currentTab === 'mine') data = data.filter(c => c.user === userName || c.user === 'Anonymous');
+
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const status = document.getElementById('statusFilter').value;
+  const cat    = document.getElementById('catFilter').value;
+  const sort   = document.getElementById('sortOrder').value;
+
+  if (search) data = data.filter(c =>
+    (c.title || '').toLowerCase().includes(search) ||
+    (c.location || '').toLowerCase().includes(search)
+  );
+  if (status !== 'all') data = data.filter(c => c.status === status);
+  if (cat !== 'all')    data = data.filter(c => c.category === cat);
+
+  if (sort === 'newest') data.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (sort === 'oldest') data.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+  if (sort === 'upvotes') data.sort((a,b) => (b.upvotes||0) - (a.upvotes||0));
+
+  document.getElementById('subText').textContent = `${data.length} complaint${data.length !== 1 ? 's' : ''}`;
+
+  const cards = document.getElementById('cardsContainer');
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  cards.innerHTML = '';
+  tbody.innerHTML = '';
+
+  if (data.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  data.forEach(c => {
+    const date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'}) : '—';
+    const icon = catIcons[c.category] || '🔧';
+    const stepClass = s => getStepClass(c.status, s);
+    const priorityColors = { High:'var(--danger)', Medium:'var(--warning)', Low:'var(--success)' };
+
+    if (currentView === 'card') {
+      cards.innerHTML += `
+        <div class="complaint-card sf-anim-slide" onclick="trackIssue(${c.id})">
+          <div class="complaint-card-img" style="position:relative;">
+            ${c.image
+              ? `<img src="${c.image}" alt="Issue photo">`
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg-2)">${icon}</div>`}
+            ${c.priority === 'High' ? '<div style="position:absolute;top:8px;right:8px;background:var(--danger);color:white;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;">🔴 URGENT</div>' : ''}
+          </div>
+          <div class="complaint-card-body">
+            <div class="complaint-card-header">
+              <div class="complaint-card-title">${c.title || 'Untitled Issue'}</div>
+              <span class="sf-badge ${statusMap[c.status] || 'sf-badge-pending'}">${c.status}</span>
+            </div>
+            <div class="complaint-card-meta">
+              <span>${icon} ${c.category || 'General'}</span>
+              <span>📍 ${(c.location || 'N/A').slice(0, 30)}</span>
+              <span>🗓 ${date}</span>
+            </div>
+            <div class="mini-track">
+              <div class="mini-step ${stepClass('Pending')}"></div>
+              <div class="mini-step ${stepClass('Verified')}"></div>
+              <div class="mini-step ${stepClass('In-Progress')}"></div>
+              <div class="mini-step ${stepClass('Solved')}"></div>
+            </div>
+            <div class="complaint-card-footer">
+              <div class="upvote-btn ${(c.upvoters||[]).includes(userName)?'voted':''}" onclick="event.stopPropagation();upvote(${c.id})">
+                ❤️ ${c.upvotes || 0}
+              </div>
+              <button class="sf-btn sf-btn-ghost" style="font-size:12px;padding:5px 12px;" onclick="event.stopPropagation();trackIssue(${c.id})">Track →</button>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      tbody.innerHTML += `
+        <tr onclick="trackIssue(${c.id})">
+          <td><b>${c.title || 'Untitled'}</b></td>
+          <td>${icon} ${c.category || 'General'}</td>
+          <td><span class="sf-badge ${statusMap[c.status]||'sf-badge-pending'}">${c.status}</span></td>
+          <td style="color:${priorityColors[c.priority]||'var(--text-muted)'};font-weight:600">${c.priority || 'Medium'}</td>
+          <td style="font-size:12px;color:var(--text-muted)">${date}</td>
+          <td><button class="sf-btn sf-btn-ghost" style="font-size:12px;padding:5px 12px;" onclick="event.stopPropagation();trackIssue(${c.id})">Track →</button></td>
+        </tr>`;
+    }
+  });
+}
+
+function trackIssue(id) {
+  localStorage.setItem('track_id', id);
+  window.location.href = 'track_complaint.html';
+}
+
+function upvote(id) {
+  const complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+  const idx = complaints.findIndex(c => c.id == id);
+  if (idx === -1) return;
+  if (!complaints[idx].upvoters) complaints[idx].upvoters = [];
+  if (complaints[idx].upvoters.includes(userName)) {
+    toast('You already upvoted this issue!', 'warning');
+    return;
+  }
+  complaints[idx].upvotes = (complaints[idx].upvotes || 0) + 1;
+  complaints[idx].upvoters.push(userName);
+  localStorage.setItem('complaints', JSON.stringify(complaints));
+  toast('👍 Upvoted! This helps prioritize the issue.', 'success');
+  renderCards();
+}
+
+renderCards();
 </script>
-
 </body>
 </html>

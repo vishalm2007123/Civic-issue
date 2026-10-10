@@ -1,284 +1,532 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>Register – Spot Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register – SpotFix</title>
+<meta name="description" content="Create your SpotFix account and start reporting civic issues to make your city better.">
+<link rel="stylesheet" href="style.css">
 <style>
-body {
-    margin: 0;
-    font-family: 'Inter', Arial, sans-serif;
-    background: #f3f6fb;
+body { min-height: 100vh; display: flex; flex-direction: column; }
+
+.auth-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - var(--nav-h));
 }
 
-
-/* Center the form perfectly */
-.container {
-    width: 92%;
-    max-width: 420px;
-    background: #ffffff;
-    margin: 50px auto;
-    padding: 50px;
-    border-radius: 14px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
-    border: 1px solid #e5e7eb;
+/* Left Panel */
+.auth-left {
+  background: linear-gradient(145deg, #4f46e5, #6366f1 40%, #818cf8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 48px;
+  color: white;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Heading */
-h2 {
-    text-align: center;
-    margin-bottom: 18px;
-    font-size: 26px;
-    font-weight: 600;
-    color: #1f2937;
+.auth-left::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 70%;
+  height: 80%;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
 }
 
-/* Clean Civix-style inputs */
-input {
-    width: 100%;
-    height: 48px;
-    padding: 0 14px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1.4px solid #d1d5db;
-    background: #ffffff;
-    font-size: 15px;
-    color: #111827;
-    outline: none;
-    transition: 0.2s ease;
+.auth-left-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+  position: relative;
 }
 
-input::placeholder {
-    color: #9ca3af;
+.auth-left-logo-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
 }
 
-/* Focus animation */
-input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.19);
+.auth-left h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 18px;
+  position: relative;
 }
 
-/* Main button */
-button {
-    width: 100%;
-    height: 48px;
-    padding: 0;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    margin-top: 15px;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.22s;
+.auth-left p {
+  font-size: 15px;
+  opacity: 0.85;
+  line-height: 1.7;
+  max-width: 380px;
+  position: relative;
 }
 
-button:hover {
-    background: #1d4ed8;
-    transform: scale(1.02);
+.auth-bullets {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
 }
 
-/* Error text */
-.error {
-    color: #dc2626;
-    text-align: center;
-    font-size: 14px;
-    margin-top: 8px;
+.auth-bullet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-/* OTP section clean */
+.auth-bullet .icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.auth-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 40px;
+  position: relative;
+}
+
+.auth-stat {
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.auth-stat-val {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.auth-stat-lbl {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+/* Right Panel */
+.auth-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-form-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.auth-form-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+.auth-form-sub a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Name row */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Password strength */
+.pw-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.pw-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.3s;
+}
+
+.pw-bar.weak   { background: var(--danger); }
+.pw-bar.medium { background: var(--warning); }
+.pw-bar.strong { background: var(--success); }
+
+.pw-label {
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* OTP Box */
 .otp-box {
-    display: none;
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8fafc;
-    border: 1px solid #dce3ff;
-    border-radius: 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  margin-top: 20px;
+  display: none;
+  animation: slideUp 0.3s var(--ease);
 }
 
-#otpMsg {
-    font-size: 14px;
-    margin-top: 6px;
+.otp-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
 }
 
-/* Stats section */
-.stats {
-    margin-top: 22px;
-    padding: 16px;
-    background: #f9fafb;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
+.otp-mock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--warning-bg);
+  color: #b45309;
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 14px;
 }
 
-.stats p {
-    margin: 6px 0;
-    font-size: 14px;
-    color: #374151;
+[data-theme="dark"] .otp-mock { color: #fbbf24; }
+
+/* Divider with text */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
-/* Govt section */
-.govt-box {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 12px;
-    border-top: 1px solid #d1d5db;
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
-.govt-box a {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 14px;
-    color: #2563eb;
-    background: #eef2ff;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: 0.2s;
+/* Staff links */
+.staff-links {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
 
-.govt-box a:hover {
-    background: #dbe4ff;
+.staff-links p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.staff-link-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+@media (max-width: 800px) {
+  .auth-layout { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+  .auth-right { padding: 24px 20px; }
 }
 </style>
-
 </head>
 <body>
 
-<div class="container">
-    <h2>Create Your SpotFix Account</h2>
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="index.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <a href="staff_login.html" class="sf-btn sf-btn-ghost" style="padding:8px 16px;font-size:13px;">Staff Login</a>
+  </div>
+</nav>
 
-    <input type="text" id="name" placeholder="Full Name" />
-    <input type="email" id="email" placeholder="Email Address" />
-    <input type="text" id="phone" placeholder="Phone Number" />
-    <input type="password" id="password" placeholder="Password" />
-    <input type="password" id="confirm" placeholder="Confirm Password" />
-    <input type="text" id="location" placeholder="Your Location" />
-
-    <button onclick="registerUser()">Be The One</button>
-
-    <p id="msg" class="error"></p>
-
-    <!-- OTP Section -->
-    <div class="otp-box" id="otpSection">
-        <p><b>Your OTP is:</b> <span id="generatedOtp"></span></p>
-        <input type="text" id="otpInput" placeholder="Enter OTP">
-        <button onclick="verifyOtp()">Verify OTP</button>
-        <p id="otpMsg"></p>
+<div class="auth-layout">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="auth-left-logo">
+      <div class="auth-left-logo-icon">📍</div>
+      <span style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;">SpotFix</span>
     </div>
 
-    <!-- Dynamic Stats Section -->
-    <div class="stats">
-        <h3>📊 Community Impact</h3>
-        <p>Total Complaints Reported: <b id="totalC">0</b></p>
-        <p>Total Resolved: <b id="solvedC">0</b></p>
-        <p>Resolution Speed: <b>3.5× faster</b> than traditional systems</p>
-        <p>Coins Earned by Community: <b id="coins">0</b> 🪙</p>
-        <small>(Users earn 25 coins per complaint!)</small>
+    <h1>Your City Needs<br>Your Voice 🏙️</h1>
+    <p>Join thousands of citizens making their city cleaner, safer, and more accountable.</p>
+
+    <div class="auth-bullets">
+      <div class="auth-bullet"><div class="icon">📍</div> Report civic issues in under 60 seconds</div>
+      <div class="auth-bullet"><div class="icon">📊</div> Track complaint status live</div>
+      <div class="auth-bullet"><div class="icon">🪙</div> Earn coins & redeem certificates</div>
+      <div class="auth-bullet"><div class="icon">🗺️</div> View city-wide heatmap</div>
     </div>
 
-    <!-- Government Employee Link Section -->
-    <div style="text-align:center; margin-top:20px; padding-top:10px; border-top:1px solid #ccc;">
-        <p style="font-size:14px; color:#444;">Are you a Government Employee?</p>
-
-        <a href="staff_register.html" 
-           style="display:inline-block; background:#0066cc; color:white; padding:10px 18px; border-radius:8px; text-decoration:none;">
-           Staff Registration
-        </a>
-
-        <br><br>
-
-        <a href="staff_login.html" style="font-size:13px; text-decoration:none; color:#0073d8;">
-            Staff Login
-        </a>
+    <div class="auth-stats">
+      <div class="auth-stat">
+        <div class="auth-stat-val" id="ls1">—</div>
+        <div class="auth-stat-lbl">Reports Made</div>
+      </div>
+      <div class="auth-stat">
+        <div class="auth-stat-val" id="ls2">—</div>
+        <div class="auth-stat-lbl">Issues Solved</div>
+      </div>
     </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-form-wrap sf-anim-slide">
+      <h2 class="auth-form-title">Create Your Account</h2>
+      <p class="auth-form-sub">Already have one? <a href="index.html">Sign in here</a></p>
+
+      <div id="regForm">
+        <div class="form-row-2">
+          <div class="sf-form-group">
+            <label class="sf-label">Full Name</label>
+            <div class="sf-input-icon-wrap">
+              <span class="sf-icon">👤</span>
+              <input class="sf-input" type="text" id="name" placeholder="John Doe">
+            </div>
+          </div>
+          <div class="sf-form-group">
+            <label class="sf-label">Phone</label>
+            <div class="sf-input-icon-wrap">
+              <span class="sf-icon">📱</span>
+              <input class="sf-input" type="text" id="phone" placeholder="+91 9876543210">
+            </div>
+          </div>
+        </div>
+
+        <div class="sf-form-group">
+          <label class="sf-label">Email Address</label>
+          <div class="sf-input-icon-wrap">
+            <span class="sf-icon">✉️</span>
+            <input class="sf-input" type="email" id="email" placeholder="john@example.com">
+          </div>
+        </div>
+
+        <div class="sf-form-group">
+          <label class="sf-label">Your City / Location</label>
+          <div class="sf-input-icon-wrap">
+            <span class="sf-icon">🏙️</span>
+            <input class="sf-input" type="text" id="location" placeholder="Coimbatore, Tamil Nadu">
+          </div>
+        </div>
+
+        <div class="sf-form-group">
+          <label class="sf-label">Password</label>
+          <div class="sf-input-icon-wrap">
+            <span class="sf-icon">🔒</span>
+            <input class="sf-input" type="password" id="password" placeholder="Min 8 characters" oninput="checkPw()">
+          </div>
+          <div class="pw-strength">
+            <div class="pw-bar" id="b1"></div>
+            <div class="pw-bar" id="b2"></div>
+            <div class="pw-bar" id="b3"></div>
+            <div class="pw-bar" id="b4"></div>
+          </div>
+          <div class="pw-label text-muted text-sm" id="pwLabel"></div>
+        </div>
+
+        <div class="sf-form-group">
+          <label class="sf-label">Confirm Password</label>
+          <div class="sf-input-icon-wrap">
+            <span class="sf-icon">🔒</span>
+            <input class="sf-input" type="password" id="confirm" placeholder="Repeat password">
+          </div>
+        </div>
+
+        <p id="msg" style="font-size:13px;color:var(--danger);margin-bottom:10px;min-height:18px;"></p>
+
+        <button class="sf-btn sf-btn-primary w-full sf-btn-lg" onclick="registerUser()">
+          Create Account & Get Started 🚀
+        </button>
+      </div>
+
+      <!-- OTP Section -->
+      <div class="otp-box" id="otpSection">
+        <div class="otp-hint">📬 We've sent a verification code to your email. Enter it below:</div>
+        <div class="otp-mock" id="otpMock">🔑 Demo OTP: <span id="generatedOtp"></span></div>
+        <div class="sf-form-group">
+          <label class="sf-label">Enter OTP</label>
+          <input class="sf-input" type="text" id="otpInput" placeholder="4-digit code" maxlength="4" style="letter-spacing:8px;font-size:22px;text-align:center;">
+        </div>
+        <p id="otpMsg" style="font-size:13px;margin-bottom:10px;min-height:18px;"></p>
+        <button class="sf-btn sf-btn-success w-full" onclick="verifyOtp()">✅ Verify & Continue</button>
+      </div>
+
+      <div class="auth-divider">or</div>
+
+      <div class="staff-links">
+        <p>Are you a Government Employee?</p>
+        <div class="staff-link-btns">
+          <a href="staff_register.html" class="sf-btn sf-btn-ghost" style="font-size:13px;">Staff Registration</a>
+          <a href="staff_login.html" class="sf-btn sf-btn-outline" style="font-size:13px;">Staff Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
+<div id="sf-toast-container"></div>
+
 <script>
-
-// Initialize dynamic stats if first time
-if (!localStorage.getItem("complaints_total")) {
-    localStorage.setItem("complaints_total", 0);
+/* Theme */
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
 }
-if (!localStorage.getItem("complaints_solved")) {
-    localStorage.setItem("complaints_solved", 0);
+
+/* Toast */
+function toast(msg, type='success') {
+  const icons = {success:'✅',danger:'❌',warning:'⚠️',info:'ℹ️'};
+  const el = document.createElement('div');
+  el.className = `sf-toast ${type}`;
+  el.innerHTML = `<span>${icons[type]||'ℹ️'}</span> ${msg}`;
+  document.getElementById('sf-toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
-if (!localStorage.getItem("coins_total")) {
-    localStorage.setItem("coins_total", 0);
+
+/* Live Stats from localStorage */
+(function() {
+  const c = JSON.parse(localStorage.getItem('complaints')) || [];
+  document.getElementById('ls1').textContent = c.length;
+  document.getElementById('ls2').textContent = c.filter(x => x.status === 'Solved').length;
+})();
+
+/* Password Strength */
+function checkPw() {
+  const pw = document.getElementById('password').value;
+  const bars = ['b1','b2','b3','b4'];
+  const label = document.getElementById('pwLabel');
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) && /[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  bars.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'pw-bar';
+    if (i < score) {
+      if (score <= 1) el.classList.add('weak');
+      else if (score <= 2) el.classList.add('medium');
+      else el.classList.add('strong');
+    }
+  });
+  const labels = ['', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+  label.textContent = pw.length > 0 ? labels[score] || 'Very Strong' : '';
 }
 
-// Display stats
-document.getElementById("totalC").innerText = localStorage.getItem("complaints_total");
-document.getElementById("solvedC").innerText = localStorage.getItem("complaints_solved");
-document.getElementById("coins").innerText = localStorage.getItem("coins_total");
+let otpGenerated = '';
 
-let otpGenerated = "";
-
-// USER REGISTRATION
 function registerUser() {
-    let name = document.getElementById("name").value.trim();
-    let email = document.getElementById("email").value.trim();
-    let phone = document.getElementById("phone").value.trim();
-    let pass = document.getElementById("password").value.trim();
-    let conf = document.getElementById("confirm").value.trim();
-    let loc = document.getElementById("location").value.trim();
-    let msg = document.getElementById("msg");
+  const name     = document.getElementById('name').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+  const pass     = document.getElementById('password').value.trim();
+  const conf     = document.getElementById('confirm').value.trim();
+  const loc      = document.getElementById('location').value.trim();
+  const msg      = document.getElementById('msg');
 
-    msg.innerHTML = "";
+  msg.textContent = '';
 
-    if (!name || !email || !phone || !pass || !conf || !loc) {
-        msg.innerHTML = "Please fill all fields.";
-        return;
-    }
+  if (!name || !email || !phone || !pass || !conf || !loc) {
+    msg.textContent = 'Please fill in all fields.'; return;
+  }
+  if (!email.includes('@') || !email.includes('.')) {
+    msg.textContent = 'Please enter a valid email.'; return;
+  }
+  if (phone.replace(/\D/g,'').length < 10) {
+    msg.textContent = 'Phone must be at least 10 digits.'; return;
+  }
+  if (pass.length < 6) {
+    msg.textContent = 'Password must be at least 6 characters.'; return;
+  }
+  if (pass !== conf) {
+    msg.textContent = 'Passwords do not match.'; return;
+  }
 
-    if (!email.includes("@") || !email.includes(".")) {
-        msg.innerHTML = "Enter a valid email.";
-        return;
-    }
+  localStorage.setItem('user_name', name);
+  localStorage.setItem('user_email', email);
+  localStorage.setItem('user_phone', phone);
+  localStorage.setItem('user_pass', pass);
+  localStorage.setItem('user_loc', loc);
 
-    if (phone.length < 10) {
-        msg.innerHTML = "Phone number must be at least 10 digits.";
-        return;
-    }
-
-    if (pass !== conf) {
-        msg.innerHTML = "Passwords do not match.";
-        return;
-    }
-
-    // Save user details
-    localStorage.setItem("user_name", name);
-    localStorage.setItem("user_email", email);
-    localStorage.setItem("user_phone", phone);
-    localStorage.setItem("user_pass", pass);
-    localStorage.setItem("user_loc", loc);
-
-    // Generate fake OTP
-    otpGenerated = Math.floor(1000 + Math.random() * 9000);
-    document.getElementById("generatedOtp").innerText = otpGenerated;
-
-    // Show OTP section
-    document.getElementById("otpSection").style.display = "block";
+  otpGenerated = Math.floor(1000 + Math.random() * 9000).toString();
+  document.getElementById('generatedOtp').textContent = otpGenerated;
+  document.getElementById('otpSection').style.display = 'block';
+  document.getElementById('otpInput').focus();
+  toast('OTP sent! Check the demo code above.', 'info');
 }
 
-// OTP VERIFICATION
 function verifyOtp() {
-    let entered = document.getElementById("otpInput").value.trim();
-    let msg = document.getElementById("otpMsg");
+  const entered = document.getElementById('otpInput').value.trim();
+  const msg = document.getElementById('otpMsg');
 
-    if (entered == otpGenerated) {
-        msg.style.color = "green";
-        msg.innerHTML = "OTP Verified! Redirecting...";
-
-        setTimeout(() => {
-            window.location.href = "home.html";
-        }, 1200);
-    } else {
-        msg.style.color = "red";
-        msg.innerHTML = "Incorrect OTP. Try again.";
-    }
+  if (entered === otpGenerated) {
+    msg.style.color = 'var(--success)';
+    msg.textContent = '✅ Verified! Redirecting to dashboard...';
+    toast('Account created! Welcome to SpotFix 🎉', 'success');
+    setTimeout(() => window.location.href = 'home.html', 1200);
+  } else {
+    msg.style.color = 'var(--danger)';
+    msg.textContent = '❌ Incorrect OTP. Please try again.';
+  }
 }
-
 </script>
-
 </body>
 </html>

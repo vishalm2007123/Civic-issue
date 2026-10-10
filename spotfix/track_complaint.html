@@ -1,253 +1,489 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>Track Issue – CivicFix</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Issue – SpotFix</title>
+<link rel="stylesheet" href="style.css">
 <style>
-/* GLOBAL */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #eef2f7;
-    animation: fadeBg 0.6s ease-in-out;
+.page-layout {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
-@keyframes fadeBg {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* Issue header card */
+.issue-header-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
 }
 
-/* HEADER */
-.header {
-    background: #005bea;
-    padding: 15px;
-    color: white;
-    text-align: center;
-    font-size: 22px;
-    animation: slideDown 0.6s ease-out;
+.issue-banner {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
 }
 
-@keyframes slideDown {
-    from { transform: translateY(-40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+.issue-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* MAIN BOX */
-.container {
-    max-width: 600px;
-    margin: 25px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    animation: slideUp 0.6s ease-out;
+.issue-detail {
+  padding: 20px 24px;
 }
 
-@keyframes slideUp {
-    from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+.issue-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
 }
 
-h2 {
-    text-align: center;
-    margin-top: 0;
+.issue-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
-/* IMAGE */
-.img-box img {
-    width: 100%;
-    border-radius: 12px;
-    margin-top: 10px;
-    animation: fadeIn 1s ease-in;
+.issue-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* TRACK LINE */
-.track-line {
-    margin: 30px 20px;
-    position: relative;
-    padding-left: 30px;
+/* Timeline */
+.timeline-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 28px 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  position: relative;
 }
 
-/* Yellow progress line */
-.track-progress {
-    position: absolute;
-    left: 12px;
-    top: 0;
-    width: 4px;
-    height: 0; /* JS controls this */
-    background: #ffca28;
-    border-radius: 4px;
-    transition: height 1s ease;
+.timeline-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 28px;
 }
 
-/* STEPS */
-.step {
-    margin: 30px 0;
-    position: relative;
-    padding-left: 10px;
-    opacity: 0;
-    animation: fadeIn 0.8s forwards;
+.timeline {
+  position: relative;
+  padding-left: 44px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
 }
 
-/* Dot */
-.circle {
-    width: 25px;
-    height: 25px;
-    background: #ccc;
-    border-radius: 50%;
-    position: absolute;
-    left: -35px;
-    top: 0px;
-    transition: 0.3s;
+.tl-step {
+  position: relative;
+  padding-bottom: 30px;
+  opacity: 0.4;
+  transition: opacity 0.3s;
 }
 
-/* Active glowing dot */
-.active .circle {
-    background: #ffca28;
-    transform: scale(1.3);
-    animation: pulse 1.2s infinite;
-    box-shadow: 0 0 15px rgba(255,200,50,0.9);
+.tl-step:last-child { padding-bottom: 0; }
+
+.tl-step.done { opacity: 1; }
+.tl-step.active { opacity: 1; }
+
+/* Step dot */
+.tl-dot {
+  position: absolute;
+  left: -30px;
+  top: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-2);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  z-index: 1;
+  transition: all 0.4s;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1.1); }
-    50% { transform: scale(1.35); }
-    100% { transform: scale(1.1); }
+.tl-step.done .tl-dot {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
 }
 
-/* Glow bar on active step */
-.active::before {
-    content: "";
-    position: absolute;
-    left: -22px;
-    top: 10px;
-    width: 6px;
-    height: 35px;
-    background: rgba(255, 202, 40, 0.7);
-    border-radius: 3px;
-    animation: glow 1.5s infinite alternate;
+.tl-step.active .tl-dot {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  animation: pulse-ring 2s infinite;
 }
 
-@keyframes glow {
-    from { opacity: 0.2; }
-    to { opacity: 1; }
+.tl-step-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: 2px;
 }
 
-.step h3 {
-    margin: 0;
-    color: #333;
+.tl-step-desc {
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
-.step p {
-    margin: 3px 0 0 0;
-    font-size: 13px;
-    color: #444;
+.tl-step-time {
+  font-size: 11px;
+  color: var(--text-subtle);
+  margin-top: 4px;
 }
 
-/* BACK BUTTON */
-.btn {
-    margin-top: 25px;
-    width: 100%;
-    padding: 12px;
-    background: #005bea;
-    color: white;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
+/* Staff comments */
+.comments-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
 }
 
-.btn:hover {
-    background: #0048a5;
-    transform: scale(1.03);
+.comments-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
 }
 
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.comment-bubble {
+  background: var(--bg-2);
+  border-radius: 4px 14px 14px 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  flex: 1;
+}
+
+.comment-author {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 3px;
+}
+
+.comment-text {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.comment-time {
+  font-size: 11px;
+  color: var(--text-subtle);
+  margin-top: 4px;
+}
+
+/* Deadline + share */
+.info-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.info-mini-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-xs);
+  text-align: center;
+}
+
+.info-mini-icon { font-size: 28px; margin-bottom: 8px; }
+.info-mini-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+.info-mini-val { font-size: 18px; font-weight: 700; color: var(--text); }
+
+@media (max-width: 480px) {
+  .info-cards-row { grid-template-columns: 1fr; }
+  .issue-meta { flex-direction: column; gap: 8px; }
+}
 </style>
 </head>
 <body>
 
-<div class="header">📍 Track Your Complaint</div>
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
+  <ul class="sf-nav__links">
+    <li><a href="home.html">🏠 Dashboard</a></li>
+    <li><a href="user_complaints.html">📋 My Issues</a></li>
+    <li><a href="rewards.html">🏆 Rewards</a></li>
+  </ul>
+  <div class="sf-nav__actions">
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
 
-<div class="container">
-    <h2 id="title">Loading...</h2>
+<div class="page-layout sf-anim-fade">
 
-    <div class="img-box">
-        <img id="issueImage">
+  <!-- Back -->
+  <div style="margin-bottom:20px;">
+    <a href="user_complaints.html" class="sf-btn sf-btn-ghost" style="font-size:13px;">
+      ← Back to My Issues
+    </a>
+  </div>
+
+  <!-- Issue Header -->
+  <div class="issue-header-card">
+    <div class="issue-banner" id="issueBanner">
+      <div style="font-size:64px;" id="bannerIcon">📍</div>
     </div>
-
-    <!-- TRACKING -->
-    <div class="track-line">
-        <div id="progressLine" class="track-progress"></div>
-
-        <div id="step1" class="step"><div class="circle"></div><h3>Pending</h3><p>Your complaint has been received.</p></div>
-        <div id="step2" class="step"><div class="circle"></div><h3>Verified</h3><p>The staff verified your issue.</p></div>
-        <div id="step3" class="step"><div class="circle"></div><h3>In-Progress</h3><p>The team is working on your issue.</p></div>
-        <div id="step4" class="step"><div class="circle"></div><h3>Solved</h3><p>Your issue has been resolved!</p></div>
+    <div class="issue-detail">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;">
+        <div class="issue-title" id="issueTitle">Loading...</div>
+        <span class="sf-badge" id="issueBadge" style="white-space:nowrap;flex-shrink:0">—</span>
+      </div>
+      <div class="issue-meta" id="issueMeta"></div>
     </div>
+  </div>
 
-    <button class="btn" onclick="goBack()">⬅ Back</button>
+  <!-- Info Row -->
+  <div class="info-cards-row">
+    <div class="info-mini-card">
+      <div class="info-mini-icon">⏰</div>
+      <div class="info-mini-label">Deadline</div>
+      <div class="info-mini-val" id="deadlineVal">Not Set</div>
+      <div id="deadlineCountdown" style="font-size:11px;color:var(--text-muted);margin-top:3px;"></div>
+    </div>
+    <div class="info-mini-card">
+      <div class="info-mini-icon">💰</div>
+      <div class="info-mini-label">Budget Allocated</div>
+      <div class="info-mini-val" id="moneyVal">Not Set</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-card">
+    <h3>🔄 Issue Progress Timeline</h3>
+    <div class="timeline">
+      <div class="tl-step" id="ts1">
+        <div class="tl-dot" id="td1">📥</div>
+        <div class="tl-step-title">Pending</div>
+        <div class="tl-step-desc">Your complaint has been received and is awaiting review.</div>
+        <div class="tl-step-time" id="tt1"></div>
+      </div>
+      <div class="tl-step" id="ts2">
+        <div class="tl-dot" id="td2">✅</div>
+        <div class="tl-step-title">Verified</div>
+        <div class="tl-step-desc">Staff has verified your issue on-ground.</div>
+        <div class="tl-step-time" id="tt2"></div>
+      </div>
+      <div class="tl-step" id="ts3">
+        <div class="tl-dot" id="td3">🔨</div>
+        <div class="tl-step-title">In-Progress</div>
+        <div class="tl-step-desc">Work has started. The team is actively fixing the issue.</div>
+        <div class="tl-step-time" id="tt3"></div>
+      </div>
+      <div class="tl-step" id="ts4">
+        <div class="tl-dot" id="td4">🎉</div>
+        <div class="tl-step-title">Solved</div>
+        <div class="tl-step-desc">Issue has been fully resolved. Thank you for reporting!</div>
+        <div class="tl-step-time" id="tt4"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staff Comments -->
+  <div class="comments-card">
+    <h3>💬 Staff Updates</h3>
+    <div id="commentsList">
+      <div class="sf-empty" style="padding:30px;">
+        <div class="sf-empty__icon" style="font-size:36px;">💬</div>
+        <div class="sf-empty__text">No updates from staff yet. Check back soon!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="sf-btn sf-btn-ghost" onclick="shareIssue()">📤 Share Issue</button>
+    <a href="user_complaints.html" class="sf-btn sf-btn-primary">← Back to Issues</a>
+  </div>
 </div>
 
+<div id="sf-toast-container"></div>
+
 <script>
-// LOAD COMPLAINT
-let id = localStorage.getItem("track_id");
-let list = JSON.parse(localStorage.getItem("complaints")) || [];
-let issue = list.find(c => c.id == id);
-
-document.getElementById("title").innerText = issue.title;
-document.getElementById("issueImage").src = issue.image;
-
-let status = issue.status;
-
-// ACTIVATE STEPS
-function activate(id) {
-    document.getElementById(id).classList.add("active");
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
 }
 
-// Status logic
-if (status === "Pending") {
-    activate("step1");
-}
-if (status === "Verified") {
-    activate("step1");
-    activate("step2");
-}
-if (status === "In-Progress") {
-    activate("step1");
-    activate("step2");
-    activate("step3");
-}
-if (status === "Solved") {
-    activate("step1");
-    activate("step2");
-    activate("step3");
-    activate("step4");
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = `sf-toast ${type}`;
+  el.innerHTML = `<span>${{success:'✅',danger:'❌',warning:'⚠️',info:'ℹ️'}[type]}</span> ${msg}`;
+  document.getElementById('sf-toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
 
-// DYNAMIC LINE HEIGHT
-let line = document.getElementById("progressLine");
-
-let stepHeights = {
-    "Pending": 40,
-    "Verified": 120,
-    "In-Progress": 205,
-    "Solved": 290
+const catIcons = {'Pothole':'🕳️','Garbage':'🗑️','Streetlight':'💡','Water Leakage':'💧','Other':'🔧'};
+const statusBadgeClass = {
+  'Pending':'sf-badge-pending','Verified':'sf-badge-verified',
+  'In-Progress':'sf-badge-inprogress','Solved':'sf-badge-solved'
 };
 
-line.style.height = stepHeights[status] + "px";
+const id = localStorage.getItem('track_id');
+const complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+const issue = complaints.find(c => c.id == id);
 
-// BACK
-function goBack() {
-    window.location.href = "user_complaints.html";
+if (!issue) {
+  document.querySelector('.page-layout').innerHTML = `
+    <div class="sf-empty" style="padding:80px;">
+      <div class="sf-empty__icon">❌</div>
+      <div class="sf-empty__title">Issue not found</div>
+      <div class="sf-empty__text"><a href="user_complaints.html" style="color:var(--primary)">Go back to My Issues</a></div>
+    </div>`;
+} else {
+  // Header
+  document.getElementById('issueTitle').textContent = issue.title || 'Untitled Issue';
+  const badge = document.getElementById('issueBadge');
+  badge.textContent = issue.status;
+  badge.className = `sf-badge ${statusBadgeClass[issue.status] || ''}`;
+
+  // Banner
+  const banner = document.getElementById('issueBanner');
+  if (issue.image) {
+    banner.innerHTML = `<img src="${issue.image}" alt="Issue photo">`;
+  } else {
+    document.getElementById('bannerIcon').textContent = catIcons[issue.category] || '📍';
+  }
+
+  // Meta
+  const d = issue.createdAt ? new Date(issue.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'Unknown';
+  document.getElementById('issueMeta').innerHTML = `
+    <span>${catIcons[issue.category]||'🔧'} ${issue.category || 'General'}</span>
+    <span>📍 ${issue.location || 'N/A'}</span>
+    <span>👤 ${issue.user || 'Anonymous'}</span>
+    <span>🗓 ${d}</span>
+    ${issue.priority ? `<span style="color:${issue.priority==='High'?'var(--danger)':issue.priority==='Medium'?'var(--warning)':'var(--success)'};font-weight:700">● ${issue.priority} Priority</span>` : ''}
+  `;
+
+  // Deadline
+  if (issue.deadline) {
+    document.getElementById('deadlineVal').textContent = issue.deadline;
+    const dl = new Date(issue.deadline);
+    const now = new Date();
+    const diff = Math.ceil((dl - now) / (1000 * 60 * 60 * 24));
+    const el = document.getElementById('deadlineCountdown');
+    if (diff < 0) {
+      el.textContent = `⚠️ ${Math.abs(diff)} days overdue`;
+      el.style.color = 'var(--danger)';
+    } else if (diff === 0) {
+      el.textContent = '⚡ Due Today!';
+      el.style.color = 'var(--warning)';
+    } else {
+      el.textContent = `${diff} days remaining`;
+    }
+  }
+
+  // Money
+  if (issue.money) {
+    document.getElementById('moneyVal').textContent = '₹' + issue.money.toLocaleString();
+  }
+
+  // Timeline
+  const order = ['Pending','Verified','In-Progress','Solved'];
+  const currentIdx = order.indexOf(issue.status);
+
+  order.forEach((s, i) => {
+    const step = document.getElementById('ts' + (i+1));
+    if (!step) return;
+    if (i < currentIdx) {
+      step.classList.add('done');
+      document.getElementById('td' + (i+1)).textContent = '✓';
+    } else if (i === currentIdx) {
+      step.classList.add('active');
+    }
+  });
+
+  // Staff comments
+  if (issue.comments && issue.comments.length > 0) {
+    document.getElementById('commentsList').innerHTML = issue.comments.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar">👷</div>
+        <div class="comment-bubble">
+          <div class="comment-author">Staff Update</div>
+          <div class="comment-text">${c.text}</div>
+          <div class="comment-time">${c.time || ''}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function shareIssue() {
+  if (issue) {
+    const text = `🏙️ SpotFix Report: "${issue.title}" — Status: ${issue.status} | Location: ${issue.location}`;
+    if (navigator.share) {
+      navigator.share({ title: 'SpotFix Issue', text });
+    } else {
+      navigator.clipboard.writeText(text).then(() => toast('Issue link copied to clipboard!', 'success'));
+    }
+  }
 }
 </script>
-
 </body>
 </html>

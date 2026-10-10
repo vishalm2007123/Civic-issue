@@ -1,383 +1,786 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<title>SpotFix – Citizen Dashboard</title>
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<!-- Leaflet JS -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard – SpotFix</title>
+<meta name="description" content="SpotFix citizen dashboard – report issues, track progress, view heatmap, earn rewards.">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Leaflet Heatmap -->
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-
 <style>
-/* ---------- THEME ---------- */
-:root {
-  --bg: #f5f7fb;
-  --bg-card: #ffffff;
-  --text: #14161f;
-  --muted: #5b6072;
-  --accent: #2563eb;
-  --border: #dde1ee;
-  --shadow-soft: 0 18px 45px rgba(15,23,42,0.12);
+.dash-layout {
+  display: flex;
+  min-height: calc(100vh - var(--nav-h));
 }
 
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background: radial-gradient(circle at top left, #e0e7ff, var(--bg));
-  color: var(--text);
+/* Sidebar */
+.dash-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 24px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: sticky;
+  top: var(--nav-h);
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
 }
 
-.container {
-  max-width: 1180px;
-  margin: 30px auto;
-  padding: 20px;
-}
-
-/* Welcome banner */
-.welcome {
-  background: white;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: var(--shadow-soft);
-  text-align: center;
-}
-
-.welcome h1 {
-  margin: 5px 0;
-  font-size: 32px;
-  font-weight: 800;
-}
-
-.welcome p {
-  margin: 4px 0;
-  color: var(--muted);
-}
-
-/* Cards */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-  margin-top: 25px;
-}
-
-.card {
-  background: white;
-  padding: 22px;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-}
-
-.card h3 { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
-.big { font-size: 34px; font-weight: 800; }
-
-/* Buttons */
-.btn-row { text-align:center; margin-top:25px; }
-
-.btn {
-  background: var(--accent);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 999px;
+.dash-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
   text-decoration: none;
-  font-weight: 600;
-  margin: 5px;
-  transition: 0.25s;
-  box-shadow: 0 10px 22px rgba(37,99,235,0.35);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--fast) var(--ease);
 }
-.btn:hover { transform: translateY(-3px); }
 
-/* -------- MAP -------- */
-.map-card {
-  background: white;
-  padding: 22px;
-  margin-top: 30px;
-  border-radius: 18px;
+.dash-sidebar a:hover { background: var(--bg-2); color: var(--text); }
+.dash-sidebar a.active { background: var(--primary-glow); color: var(--primary); font-weight: 600; }
+.dash-sidebar .icon { font-size: 18px; width: 22px; text-align: center; }
+
+.dash-sidebar-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 14px 12px 6px;
+}
+
+.dash-sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+/* Main content */
+.dash-main {
+  flex: 1;
+  padding: 28px 28px;
+  overflow-x: hidden;
+}
+
+/* Welcome Banner */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--r-xl);
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-banner::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 50%;
+  height: 200%;
+  background: rgba(255,255,255,0.07);
+  transform: rotate(15deg);
+}
+
+.welcome-text h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.welcome-text p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+}
+
+.welcome-emoji { font-size: 56px; position: relative; }
+
+/* Stat cards grid */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/* Map Card */
+.map-section {
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.map-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-header h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 #leafletMap {
   width: 100%;
-  height: 460px;
-  border-radius: 18px;
-  margin-top: 14px;
+  height: 420px;
 }
 
-/* Legend */
-.legend {
-  position: absolute;
-  bottom: 25px;
-  right: 25px;
-  background: white;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  z-index: 999;
+.map-legend {
+  padding: 14px 24px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
 }
 
-.legend div {
+.legend-item {
   display: flex;
   align-items: center;
-  margin: 6px 0;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
-.legend span {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
+.legend-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin-right: 8px;
 }
 
-/* ---------- CHATBOT ---------- */
+/* Recent Complaints */
+.recent-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-hdr {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-hdr h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.complaint-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--fast) var(--ease);
+  cursor: pointer;
+}
+
+.complaint-row:last-child { border-bottom: none; }
+.complaint-row:hover { background: var(--bg-2); }
+
+.complaint-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.complaint-info p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Chatbot */
 #chat-toggle {
   position: fixed;
-  right: 24px; bottom: 24px;
-  width: 56px; height: 56px;
+  right: 24px;
+  bottom: 24px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
-  font-size: 26px;
+  font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(37,99,235,0.5);
-  z-index: 1000;
+  box-shadow: var(--shadow-primary);
+  z-index: 900;
+  transition: all var(--normal) var(--ease);
 }
+
+#chat-toggle:hover { transform: scale(1.1); }
 
 #chat-widget {
   position: fixed;
   right: 24px;
-  bottom: 92px;
-  width: 320px;
-  max-height: 420px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-  border: 1px solid #ddd;
+  bottom: 90px;
+  width: 340px;
+  max-height: 480px;
+  background: var(--card);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
   display: none;
   flex-direction: column;
   overflow: hidden;
-  z-index: 1000;
+  z-index: 900;
+  animation: slideUp 0.3s var(--ease);
 }
 
 .chat-header {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: white;
-  padding: 10px 14px;
-  font-size: 14px;
+  padding: 14px 18px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
 }
-.chat-close { cursor: pointer; }
 
-/* chat body */
+.chat-header-info { display: flex; align-items: center; gap: 10px; }
+.chat-header-avatar {
+  width: 34px;
+  height: 34px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.chat-status {
+  font-size: 11px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.chat-close { cursor: pointer; font-size: 20px; line-height: 1; }
+
 .chat-body {
-  padding: 10px;
-  background: #f5f6fa;
+  padding: 14px;
+  background: var(--bg-2);
   overflow-y: auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
+
 .chat-msg {
   max-width: 85%;
-  padding: 8px 12px;
-  border-radius: 12px;
-  margin: 4px 0;
+  padding: 9px 13px;
+  border-radius: 14px;
   font-size: 13px;
+  line-height: 1.5;
 }
-.chat-msg.bot { background: #e6edff; }
-.chat-msg.user { background: #2563eb; color: white; margin-left: auto; }
 
-/* chat input */
+.chat-msg.bot {
+  background: var(--card);
+  color: var(--text);
+  border-radius: 4px 14px 14px 14px;
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+
+.chat-msg.user {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  border-radius: 14px 4px 14px 14px;
+  align-self: flex-end;
+}
+
 .chat-footer {
   display: flex;
-  padding: 8px;
-  background: #f0f2f5;
+  padding: 10px;
+  gap: 8px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
 }
+
 .chat-footer input {
   flex: 1;
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  padding: 9px 12px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
 }
+
+.chat-footer input:focus {
+  border-color: var(--primary);
+}
+
 .chat-footer button {
-  padding: 8px 12px;
-  margin-left: 8px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: none;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--fast) var(--ease);
+}
+
+.chat-footer button:hover { background: var(--primary-dark); }
+
+/* Quick replies */
+.chat-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 14px 10px;
+  background: var(--bg-2);
+}
+
+.qr-btn {
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+
+.qr-btn:hover {
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .dash-sidebar { display: none; }
+  .dash-main { padding: 20px 16px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .welcome-banner { flex-direction: column; gap: 16px; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  #chat-widget { width: calc(100vw - 32px); right: 16px; }
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<!-- NAVBAR -->
+<nav class="sf-nav">
+  <a href="home.html" class="sf-nav__logo">
+    <div class="sf-nav__logo-icon">📍</div>
+    <div class="sf-nav__logo-text">Spot<span>Fix</span></div>
+  </a>
 
-  <div class="welcome">
-    <p id="greet">Hello, Citizen</p>
-    <h1>Welcome to SpotFix</h1>
-    <p>Help your city improve by reporting civic issues. 💪</p>
+  <ul class="sf-nav__links">
+    <li><a href="home.html" class="active">🏠 Dashboard</a></li>
+    <li><a href="report.html">➕ Report</a></li>
+    <li><a href="user_complaints.html">📋 My Issues</a></li>
+    <li><a href="rewards.html">🏆 Rewards</a></li>
+    <li><a href="leaderboard.html">🥇 Leaderboard</a></li>
+  </ul>
+
+  <div class="sf-nav__actions">
+    <div class="sf-nav__bell" id="notifBtn" onclick="toggleNotif()">
+      🔔
+      <div class="sf-nav__badge" id="notifBadge" style="display:none">0</div>
+    </div>
+    <button class="sf-nav__theme" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <div class="sf-nav__avatar" id="avatarEl" title="Profile">?</div>
   </div>
 
-  <div class="cards">
-    <div class="card"><h3>Your Complaints</h3><div class="big" id="userComplaints">0</div></div>
-    <div class="card"><h3>Your Coins</h3><div class="big" id="userCoins">0 🪙</div></div>
-    <div class="card"><h3>Community Complaints</h3><div class="big" id="communityTotal">0</div></div>
-    <div class="card"><h3>Total Solved</h3><div class="big" id="communitySolved">0</div></div>
-  </div>
+  <button class="sf-nav__hamburger" onclick="toggleMobileNav()" id="hamburger">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
 
-  <div class="btn-row">
-    <a class="btn" href="report.html">➕ Report Issue</a>
-    <a class="btn" href="user_complaints.html">📋 My Complaints</a>
-    <a class="btn" href="rewards.html">🏆 Rewards</a>
-  </div>
+<div class="sf-mobile-nav" id="mobileNav">
+  <a href="home.html">🏠 Dashboard</a>
+  <a href="report.html">➕ Report Issue</a>
+  <a href="user_complaints.html">📋 My Issues</a>
+  <a href="rewards.html">🏆 Rewards</a>
+  <a href="leaderboard.html">🥇 Leaderboard</a>
+  <a href="survey.html">📝 Survey</a>
+</div>
 
-  <!-- MAP CARD -->
-  <div class="map-card">
-    <h3>🗺️ Complaints Heatmap</h3>
-    <p>Status-based heat intensity</p>
+<div class="dash-layout">
+  <!-- SIDEBAR -->
+  <div class="dash-sidebar">
+    <div class="dash-sidebar-title">Navigation</div>
+    <a href="home.html" class="active"><span class="icon">🏠</span> Dashboard</a>
+    <a href="report.html"><span class="icon">➕</span> Report Issue</a>
+    <a href="user_complaints.html"><span class="icon">📋</span> My Issues</a>
+    <a href="track_complaint.html"><span class="icon">🔍</span> Track Issue</a>
+    <a href="rewards.html"><span class="icon">🏆</span> Rewards</a>
+    <a href="leaderboard.html"><span class="icon">🥇</span> Leaderboard</a>
 
-    <div id="leafletMap"></div>
+    <div class="dash-sidebar-title">Community</div>
+    <a href="survey.html"><span class="icon">📝</span> Survey</a>
 
-    <!-- LEGEND -->
-    <div class="legend">
-      <div><span style="background:red"></span> Pending</div>
-      <div><span style="background:orange"></span> In-Progress / Verified</div>
-      <div><span style="background:green"></span> Solved</div>
+    <div class="dash-sidebar-bottom">
+      <a href="index.html" style="color:var(--danger)"><span class="icon">🚪</span> Sign Out</a>
     </div>
   </div>
 
+  <!-- MAIN -->
+  <div class="dash-main">
+    <!-- Welcome -->
+    <div class="welcome-banner sf-anim-slide">
+      <div class="welcome-text">
+        <h2 id="greet">Welcome back! 👋</h2>
+        <p>Here's your civic impact at a glance. Keep reporting!</p>
+      </div>
+      <div class="welcome-emoji">🏙️</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row sf-stagger">
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon primary">📋</div>
+        <div>
+          <div class="sf-stat-value" id="myCount">0</div>
+          <div class="sf-stat-label">Your Reports</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon warning">🪙</div>
+        <div>
+          <div class="sf-stat-value" id="myCoins">0</div>
+          <div class="sf-stat-label">Coins Earned</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon info">🌍</div>
+        <div>
+          <div class="sf-stat-value" id="communityTotal">0</div>
+          <div class="sf-stat-label">Community Reports</div>
+        </div>
+      </div>
+      <div class="sf-stat-card sf-anim-slide">
+        <div class="sf-stat-icon success">✅</div>
+        <div>
+          <div class="sf-stat-value" id="commSolved">0</div>
+          <div class="sf-stat-label">Total Solved</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a href="report.html" class="sf-btn sf-btn-primary">➕ Report New Issue</a>
+      <a href="user_complaints.html" class="sf-btn sf-btn-ghost">📋 My Complaints</a>
+      <a href="rewards.html" class="sf-btn sf-btn-ghost">🏆 Redeem Rewards</a>
+      <a href="leaderboard.html" class="sf-btn sf-btn-ghost">🥇 Leaderboard</a>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="map-section sf-anim-slide">
+      <div class="map-header">
+        <div>
+          <h3>🗺️ Community Issues Heatmap</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:2px;">Real-time view of reported civic issues</p>
+        </div>
+        <select class="sf-select" id="mapFilter" onchange="refreshMap()" style="width:auto;padding:8px 32px 8px 12px;">
+          <option value="all">All Issues</option>
+          <option value="Pending">Pending</option>
+          <option value="Verified">Verified</option>
+          <option value="In-Progress">In-Progress</option>
+          <option value="Solved">Solved</option>
+        </select>
+      </div>
+      <div id="leafletMap"></div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Pending</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Verified</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>In-Progress</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Solved</div>
+      </div>
+    </div>
+
+    <!-- Recent Complaints -->
+    <div class="recent-section sf-anim-slide" style="margin-top:24px;">
+      <div class="section-hdr">
+        <h3>🕐 Recent Community Reports</h3>
+        <a href="user_complaints.html" class="sf-btn sf-btn-ghost" style="font-size:12px;padding:6px 14px;">View All</a>
+      </div>
+      <div id="recentList">
+        <div class="sf-empty">
+          <div class="sf-empty__icon">📭</div>
+          <div class="sf-empty__title">No reports yet</div>
+          <div class="sf-empty__text">Be the first to report a civic issue in your area!</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- CHATBOT -->
-<button id="chat-toggle">💬</button>
-
+<button id="chat-toggle" onclick="toggleChat()">💬</button>
 <div id="chat-widget">
   <div class="chat-header">
-    <span>SpotFix Assistant</span>
-    <span class="chat-close" onclick="toggleChat()">×</span>
+    <div class="chat-header-info">
+      <div class="chat-header-avatar">🤖</div>
+      <div>
+        <div>SpotFix Assistant</div>
+        <div class="chat-status">● Online – Ask me anything</div>
+      </div>
+    </div>
+    <span class="chat-close" onclick="toggleChat()">✕</span>
   </div>
   <div class="chat-body" id="chatBody"></div>
+  <div class="chat-quick-replies" id="quickReplies">
+    <button class="qr-btn" onclick="sendQuick('How do I report?')">Report issue?</button>
+    <button class="qr-btn" onclick="sendQuick('How many coins do I have?')">My coins?</button>
+    <button class="qr-btn" onclick="sendQuick('How does the map work?')">Map help</button>
+    <button class="qr-btn" onclick="sendQuick('What rewards can I get?')">Rewards?</button>
+  </div>
   <div class="chat-footer">
-    <input id="chatInput" placeholder="Ask me anything...">
-    <button onclick="sendChat()">Send</button>
+    <input id="chatInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()">➤</button>
   </div>
 </div>
 
+<div id="sf-toast-container"></div>
+
 <script>
-/* ------------ USER STATS ------------- */
-const userName = localStorage.getItem("user_name") || "Citizen";
-document.getElementById("greet").innerText = "Hello, " + userName;
+/* ---- Theme ---- */
+(function() {
+  const saved = localStorage.getItem('sf_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sf_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+function toggleMobileNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
 
-let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+/* ---- Load User ---- */
+const userName = localStorage.getItem('user_name') || 'Citizen';
+document.getElementById('greet').textContent = 'Welcome back, ' + userName + '! 👋';
+document.getElementById('avatarEl').textContent = userName.charAt(0).toUpperCase();
 
-document.getElementById("communityTotal").innerText = complaints.length;
-document.getElementById("communitySolved").innerText = complaints.filter(c => c.status === "Solved").length;
-document.getElementById("userComplaints").innerText = complaints.filter(c => c.user === userName).length;
+/* ---- Stats ---- */
+const complaints = JSON.parse(localStorage.getItem('complaints')) || [];
+const userComplaints = complaints.filter(c => c.user === userName);
+const coins = parseInt(localStorage.getItem('user_coins_' + userName)) || 0;
 
-let coins = parseInt(localStorage.getItem("user_coins_" + userName)) || 0;
-document.getElementById("userCoins").innerText = coins + " 🪙";
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  let n = 0;
+  const step = Math.max(1, Math.floor(target / 30));
+  const t = setInterval(() => {
+    n = Math.min(n + step, target);
+    el.textContent = n;
+    if (n >= target) clearInterval(t);
+  }, 30);
+}
 
-/* ------------ LEAFLET HEATMAP ------------- */
+animCount('myCount', userComplaints.length);
+animCount('myCoins', coins);
+animCount('communityTotal', complaints.length);
+animCount('commSolved', complaints.filter(c => c.status === 'Solved').length);
 
-let map = L.map('leafletMap').setView([10.8279, 77.0580], 15);
+/* ---- Recent Reports ---- */
+const recentList = document.getElementById('recentList');
+const recent = [...complaints].reverse().slice(0, 5);
+if (recent.length > 0) {
+  recentList.innerHTML = '';
+  recent.forEach(c => {
+    const statusMap = {
+      'Pending': 'sf-badge-pending',
+      'Verified': 'sf-badge-verified',
+      'In-Progress': 'sf-badge-inprogress',
+      'Solved': 'sf-badge-solved'
+    };
+    const d = new Date(c.createdAt);
+    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    recentList.innerHTML += `
+      <div class="complaint-row" onclick="trackIssue(${c.id})">
+        <div class="complaint-info">
+          <h4>${c.title || 'Untitled Issue'}</h4>
+          <p>${c.category || 'General'} · ${c.location || 'Location N/A'} · ${dateStr}</p>
+        </div>
+        <span class="sf-badge ${statusMap[c.status] || 'sf-badge-pending'}">${c.status}</span>
+      </div>`;
+  });
+}
 
-// Map tile source
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19
-}).addTo(map);
+function trackIssue(id) {
+  localStorage.setItem('track_id', id);
+  window.location.href = 'track_complaint.html';
+}
 
-let heatPoints = [];
+/* ---- Leaflet Map ---- */
+let leafletMap, heatLayer, markersLayer;
 
-// Create markers + heat points
-complaints.forEach(c => {
+function initMap() {
+  leafletMap = L.map('leafletMap').setView([10.8279, 77.0580], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(leafletMap);
+  markersLayer = L.layerGroup().addTo(leafletMap);
+  refreshMap();
+}
 
-  // Location
-  let lat = c.lat || (10.8279 + (Math.random() - 0.5) * 0.01);
-  let lng = c.lng || (77.0580 + (Math.random() - 0.5) * 0.01);
+function refreshMap() {
+  if (!leafletMap) return;
+  markersLayer.clearLayers();
 
-  // Intensity
-  let intensity = 0.6;
-  if (c.status === "Pending") intensity = 1.0;
-  if (c.status === "In-Progress" || c.status === "Verified") intensity = 0.75;
-  if (c.status === "Solved") intensity = 0.4;
+  const filter = document.getElementById('mapFilter').value;
+  const colorMap = {
+    'Pending': '#ef4444', 'Verified': '#3b82f6',
+    'In-Progress': '#8b5cf6', 'Solved': '#10b981'
+  };
 
-  heatPoints.push([lat, lng, intensity]);
+  const allData = JSON.parse(localStorage.getItem('complaints')) || [];
+  const filtered = filter === 'all' ? allData : allData.filter(c => c.status === filter);
+  const heatPts = [];
 
-  let color = "red";
-  if (c.status === "In-Progress" || c.status === "Verified") color = "orange";
-  if (c.status === "Solved") color = "green";
+  filtered.forEach(c => {
+    const lat = c.lat || (10.8279 + (Math.random() - 0.5) * 0.02);
+    const lng = c.lng || (77.0580 + (Math.random() - 0.5) * 0.02);
+    const intensity = c.status === 'Pending' ? 1.0 : c.status === 'Solved' ? 0.3 : 0.65;
+    heatPts.push([lat, lng, intensity]);
 
-  let marker = L.circleMarker([lat, lng], {
-    radius: 9,
-    fillColor: color,
-    color: "#fff",
-    weight: 2,
-    fillOpacity: 0.95
-  }).addTo(map);
+    const marker = L.circleMarker([lat, lng], {
+      radius: 9, fillColor: colorMap[c.status] || '#6366f1',
+      color: '#fff', weight: 2, fillOpacity: 0.9
+    }).addTo(markersLayer);
 
-  marker.bindPopup(`
-    <b>${c.title || "Issue"}</b><br>
-    <b>Status:</b> ${c.status}<br>
-    <b>Location:</b> ${c.location || "Not specified"}<br>
-    <b>User:</b> ${c.user}
-  `);
-});
+    marker.bindPopup(`<b>${c.title || 'Issue'}</b><br>
+      <b>Status:</b> ${c.status}<br>
+      <b>Category:</b> ${c.category}<br>
+      <b>Location:</b> ${c.location || 'N/A'}<br>
+      <b>Reporter:</b> ${c.user}`);
+  });
 
-// Heatmap layer
-L.heatLayer(heatPoints, {
-  radius: 35,
-  blur: 20,
-  maxZoom: 18,
-}).addTo(map);
+  if (heatLayer) leafletMap.removeLayer(heatLayer);
+  heatLayer = L.heatLayer(heatPts, { radius: 35, blur: 20, maxZoom: 18 }).addTo(leafletMap);
+}
 
-/* ------------ CHATBOT ------------- */
+initMap();
 
-const chatWidget = document.getElementById("chat-widget");
-const chatBody = document.getElementById("chatBody");
-const chatInput = document.getElementById("chatInput");
+/* ---- Notifications ---- */
+function toggleNotif() {
+  toast('All notifications cleared! ✓', 'info');
+}
 
-document.getElementById("chat-toggle").onclick = () => {
-  chatWidget.style.display = (chatWidget.style.display === "flex" ? "none" : "flex");
-};
+/* ---- Toast ---- */
+function toast(msg, type='success') {
+  const icons = {success:'✅',danger:'❌',warning:'⚠️',info:'ℹ️'};
+  const el = document.createElement('div');
+  el.className = `sf-toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span> ${msg}`;
+  document.getElementById('sf-toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+/* ---- Chatbot ---- */
+const chatWidget = document.getElementById('chat-widget');
+const chatBody = document.getElementById('chatBody');
+const chatInput = document.getElementById('chatInput');
+
+function toggleChat() {
+  const open = chatWidget.style.display === 'flex';
+  chatWidget.style.display = open ? 'none' : 'flex';
+}
 
 function addMsg(text, who) {
-  let box = document.createElement("div");
-  box.className = "chat-msg " + who;
+  const box = document.createElement('div');
+  box.className = 'chat-msg ' + who;
   box.innerHTML = text;
   chatBody.appendChild(box);
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 
 function sendChat() {
-  let msg = chatInput.value.trim();
+  const msg = chatInput.value.trim();
   if (!msg) return;
-  addMsg(msg, "user");
-  chatInput.value = "";
-  setTimeout(() => addMsg(botReply(msg), "bot"), 300);
+  addMsg(msg, 'user');
+  chatInput.value = '';
+  document.getElementById('quickReplies').style.display = 'none';
+  setTimeout(() => addMsg(botReply(msg), 'bot'), 350);
+}
+
+function sendQuick(msg) {
+  addMsg(msg, 'user');
+  document.getElementById('quickReplies').style.display = 'none';
+  setTimeout(() => addMsg(botReply(msg), 'bot'), 350);
 }
 
 function botReply(t) {
   t = t.toLowerCase();
-  if (t.includes("report")) return "Click 'Report Issue' to submit a new complaint.";
-  if (t.includes("coin")) return `You have <b>${coins}</b> coins!`;
-  if (t.includes("map") || t.includes("heatmap")) return "Red = Pending, Orange = In-Progress, Green = Solved.";
-  if (t.includes("hello") || t.includes("hi")) return `Hello ${userName}! How can I help?`;
-  return "I can help with map, coins, reporting, and your data.";
+  if (t.includes('report') || t.includes('complaint'))
+    return `To report an issue, click <a href="report.html" style="color:var(--primary);font-weight:600;">Report Issue</a>. Earn 25 coins per report! 📍`;
+  if (t.includes('coin'))
+    return `You have <b>${coins}</b> 🪙 coins! Earn 25 per report. Redeem <a href="rewards.html" style="color:var(--primary);">rewards here</a>.`;
+  if (t.includes('map') || t.includes('heatmap'))
+    return `The heatmap shows all community reports. 🔴 = Pending, 🔵 = Verified, 🟣 = In-Progress, 🟢 = Solved.`;
+  if (t.includes('reward') || t.includes('certificate'))
+    return `Earn coins & redeem rewards! Bronze (100🪙), Silver (250🪙), Gold (500🪙), Platinum (1000🪙). <a href="rewards.html" style="color:var(--primary);">View Rewards</a>`;
+  if (t.includes('track') || t.includes('status'))
+    return `Go to <a href="user_complaints.html" style="color:var(--primary);">My Issues</a> to track any complaint live!`;
+  if (t.includes('hello') || t.includes('hi'))
+    return `Hello ${userName}! 👋 I'm your SpotFix assistant. Ask me about reporting, coins, rewards, or the map!`;
+  if (t.includes('leaderboard') || t.includes('rank'))
+    return `Check the <a href="leaderboard.html" style="color:var(--primary);">Leaderboard</a> to see how you rank among civic heroes! 🥇`;
+  return `I can help with: <b>reporting issues</b>, <b>tracking complaints</b>, <b>coins & rewards</b>, <b>map help</b>, and more. What do you need? 🤖`;
 }
 
-addMsg(`Hi ${userName}! 👋 I’m your SpotFix assistant.`, "bot");
+addMsg(`Hi ${userName}! 👋 I'm your SpotFix assistant. How can I help you today?`, 'bot');
 </script>
-
 </body>
 </html>
