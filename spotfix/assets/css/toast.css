@@ -1,0 +1,49 @@
+
+/* SpotFix Toast CSS */
+.spotfix-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  pointer-events: none;
+}
+.spotfix-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(18, 24, 38, 0.92);
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: inherit;
+  font-size: 14px;
+  animation: spotfixSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.spotfix-toast.hide {
+  animation: spotfixSlideOut 0.3s ease forwards;
+}
+.spotfix-toast-success { border-left: 4px solid #10b981; }
+.spotfix-toast-error { border-left: 4px solid #ef4444; }
+.spotfix-toast-warning { border-left: 4px solid #f59e0b; }
+.spotfix-toast-info { border-left: 4px solid #6366f1; }
+.spotfix-toast-icon { font-weight: bold; font-size: 16px; }
+.spotfix-toast-msg { flex: 1; }
+.spotfix-toast-close { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 18px; cursor: pointer; }
+.spotfix-toast-close:hover { color: #fff; }
+
+@keyframes spotfixSlideIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes spotfixSlideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}
