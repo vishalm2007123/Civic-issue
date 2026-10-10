@@ -251,7 +251,7 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="sf-section-title">📋 My Complaints</h1>
-<div style="margin: 10px 0;"><button id="btn-export-csv" class="btn btn-outline" onclick="SpotFixExport.exportToCSV('my_complaints.csv', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📥 Export CSV</button></div>
+<div style="margin: 10px 0;"><button id="btn-export-csv" style="margin-right:8px;" class="btn btn-outline" onclick="SpotFixExport.exportToCSV('my_complaints.csv', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📥 Export CSV</button><button id="btn-export-json" class="btn btn-outline" onclick="SpotFixExport.exportToJSON('my_complaints.json', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📦 Export JSON</button></div>
       <p class="sf-section-sub" id="subText">All your submitted civic reports</p>
     </div>
     <a href="report.html" class="sf-btn sf-btn-primary">➕ New Report</a>
