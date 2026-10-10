@@ -155,6 +155,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
     <div class="sf-nav__avatar" style="background:linear-gradient(135deg,#dc2626,#b91c1c)" id="staffAvatar">S</div>
   </div>
 <button id="spotfix-theme-btn" class="btn btn-ghost" style="padding:6px 12px; font-size:13px; margin-left:8px;" aria-label="Toggle theme">🌙 Dark Mode</button>
+<button id="btn-notif-bell" class="btn btn-ghost" style="position:relative; font-size:18px; margin-left:8px;" onclick="SpotFixNotifs.toggleDrawer()" aria-label="Notifications">🔔<span style="position:absolute; top:2px; right:2px; background:#ef4444; width:8px; height:8px; border-radius:50%;"></span></button>
 </nav>
 
 <div class="staff-layout">
@@ -405,5 +406,6 @@ loadDashboard();
   <script src="assets/js/analytics-widget.js"></script>
   <script src="assets/js/search-filter.js"></script>
   <script src="assets/js/staff-actions.js"></script>
+  <script src="assets/js/live-notifications.js"></script>
 </body>
 </html>
