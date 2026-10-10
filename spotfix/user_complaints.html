@@ -256,6 +256,13 @@
   <div style="margin:16px 0;">
     <input type="text" id="complaint-search-input" placeholder="🔍 Search complaints by ID, category, location..." style="width:100%; padding:10px 14px; border-radius:10px; border:1px solid var(--border, #334155); background:var(--card-bg, #1e293b); color:var(--text, #fff); font-size:14px;">
   </div>
+
+  <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
+    <button class="btn btn-primary" id="filter-chip-all" style="padding:4px 12px; font-size:12px;">All Status</button>
+    <button class="btn btn-outline" style="padding:4px 12px; font-size:12px;">Pending</button>
+    <button class="btn btn-outline" style="padding:4px 12px; font-size:12px;">In Progress</button>
+    <button class="btn btn-outline" style="padding:4px 12px; font-size:12px;">Resolved</button>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       SpotFixFilter.applyFilter('complaint-search-input', '.complaints-list', '.card, tr');
