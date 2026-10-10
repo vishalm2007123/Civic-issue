@@ -251,6 +251,7 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="sf-section-title">📋 My Complaints</h1>
+<div style="margin: 10px 0;"><button id="btn-export-csv" class="btn btn-outline" onclick="SpotFixExport.exportToCSV('my_complaints.csv', [{id:'FIX-1089', category:'Pothole', status:'In Progress', date:'2026-10-09'}])">📥 Export CSV</button></div>
       <p class="sf-section-sub" id="subText">All your submitted civic reports</p>
     </div>
     <a href="report.html" class="sf-btn sf-btn-primary">➕ New Report</a>
@@ -500,5 +501,6 @@ renderCards();
 </script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/theme-toggle.js"></script>
+  <script src="assets/js/export-utils.js"></script>
 </body>
 </html>
