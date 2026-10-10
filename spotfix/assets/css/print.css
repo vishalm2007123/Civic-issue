@@ -1,0 +1,16 @@
+
+/* SpotFix Print & PDF Export Stylesheet */
+@media print {
+  nav, footer, #spotfix-fab, #spotfix-toast-container, #spotfix-hotline-bar, .btn {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-family: Arial, sans-serif !important;
+  }
+  .card, fieldset {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}
