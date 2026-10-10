@@ -173,6 +173,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="sf-section-title">🏛️ Staff Dashboard</h1>
+<div style="margin: 10px 0;"><button id="btn-staff-export-csv" class="btn btn-primary" onclick="SpotFixExport.exportToCSV('staff_issue_dump.csv', [{id:'FIX-1090', category:'Streetlight', status:'Pending', priority:'High'}])">📊 Export Staff CSV Dump</button></div>
         <p class="sf-section-sub">Government staff portal — manage all civic complaints</p>
       </div>
       <a href="issue_management.html" class="sf-btn sf-btn-primary">📋 Manage Issues →</a>
@@ -399,5 +400,6 @@ loadDashboard();
 </script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/theme-toggle.js"></script>
+  <script src="assets/js/export-utils.js"></script>
 </body>
 </html>
